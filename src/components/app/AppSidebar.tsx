@@ -36,7 +36,7 @@ export function AppSidebar() {
         <SidebarGroup>
           <Link to="/" className="flex items-center gap-2 px-2 py-4">
             <span className="text-2xl">📄</span>
-            {!collapsed && <span className="font-bold text-foreground">ResumeGPT</span>}
+            {!collapsed && <span className="font-bold text-foreground">AI Resume Studio</span>}
           </Link>
           <SidebarGroupContent>
             <SidebarMenu className="gap-1">

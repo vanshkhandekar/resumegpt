@@ -6,7 +6,7 @@ import { Textarea } from "@/components/ui/textarea";
 export default function PromptPage() {
   const prompt = useMemo(
     () =>
-      `Create a web application called “ResumeGPT — AI Resume Builder” with these requirements.
+      `Create a web application called “AI Resume Studio — Professional Resume Builder” with these requirements.
 
 GOAL
 Build a resume builder with a dashboard experience and an admin panel that controls global AI behavior and API key management.
@@ -15,14 +15,14 @@ TECH STACK
 - React + Vite + TypeScript
 - Tailwind + shadcn-ui
 - Routing with react-router-dom
-- Backend via Lovable Cloud (database, auth, server functions)
+- Backend via Supabase (database, auth, server functions)
 
 BRANDING + BASIC INFO (MUST BE VISIBLE AT TOP)
-- App name everywhere: ResumeGPT
+- App name everywhere: AI Resume Studio
 - Landing page and header must clearly show (immediately, not hidden):
   - College: Janaprabha College, Ramtek
   - Class: BCA 3rd Year
-  - Group Members: Vansh Khandekar, Shubham Chandekar, Pranay Mende
+  - Group Members: Vansh Khandekar, Shubham Chandekar, Rahul Yenurkar, Pranay Mende
 
 ROUTES
 - / → Public landing page (academic project report style)
@@ -36,7 +36,7 @@ ROUTES
 
 PUBLIC LANDING PAGE (/)
 - Design the landing page like a professional academic report.
-- Hero must show ResumeGPT + short subtitle.
+- Hero must show AI Resume Studio + short subtitle.
 - Show the basic info strip (college/class/members) near the top (always visible).
 - Include “Build Resume” CTA linking to /create.
 - Include an accordion report section:
@@ -143,21 +143,21 @@ IMPORTANT CONSTRAINTS
 
   return (
     <div className="mx-auto w-full max-w-4xl">
-      <h1 className="text-2xl font-semibold tracking-tight">Copy Prompt</h1>
-      <p className="mt-1 text-muted-foreground">One-click copy karke kisi ko bhi bhej do.</p>
+      <h1 className="text-2xl font-semibold tracking-tight">System Prompt</h1>
+      <p className="mt-1 text-muted-foreground">Copy the master prompt used for this application.</p>
 
       <Card className="mt-6">
         <CardHeader className="flex flex-row items-start justify-between gap-4">
           <div className="grid gap-1">
             <CardTitle>Master Prompt</CardTitle>
-            <CardDescription>Is prompt ko as-is use karo to same type ki website recreate hogi.</CardDescription>
+            <CardDescription>Use this prompt to recreate or extend the application logic.</CardDescription>
           </div>
           <Button onClick={copy} className="shrink-0">
             {copied ? "Copied" : "Copy"}
           </Button>
         </CardHeader>
         <CardContent>
-          <Textarea value={prompt} readOnly className="min-h-[520px] font-mono text-xs" />
+          <Textarea value={prompt} readOnly className="min-h-[420px] font-mono text-xs" />
         </CardContent>
       </Card>
     </div>

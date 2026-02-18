@@ -104,7 +104,7 @@ export function LandingHero() {
                     <DialogDescription>Academic evaluation snapshot</DialogDescription>
                   </DialogHeader>
                   <div className="grid gap-4 text-sm">
-                    <div><span className="font-semibold">Project Title:</span> ResumeGPT - AI Resume Builder</div>
+                    <div><span className="font-semibold">Project Title:</span> AI Resume Studio - Professional Resume Builder</div>
                     <div><span className="font-semibold">Course:</span> BCA 3rd Year Major Project</div>
                     <div><span className="font-semibold">Group Members:</span> Vansh Khandekar, Shubham Chandekar, Rahul Yenurkar, Pranay Mende</div>
                     <div><span className="font-semibold">Problem Statement:</span> Students struggle to create ATS-friendly professional resumes quickly.</div>
@@ -120,7 +120,7 @@ export function LandingHero() {
       </header>
 
       <section aria-label="Features">
-        <h2 className="mb-6 bg-gradient-to-r from-primary to-secondary bg-clip-text text-2xl font-bold text-transparent">Why Choose ResumeGPT?</h2>
+        <h2 className="mb-6 bg-gradient-to-r from-primary to-secondary bg-clip-text text-2xl font-bold text-transparent">Why Choose AI Resume Studio?</h2>
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {features.map((item) => (
             <div key={item.title} className="rounded-xl border border-border bg-card/80 p-6 transition-colors hover:border-primary/60">

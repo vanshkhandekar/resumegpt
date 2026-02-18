@@ -46,39 +46,39 @@ serve(async (req) => {
 
   try {
     const { resumeData, baseline, apiKey } = await req.json();
-    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
-    const ACTIVE_KEY = String(apiKey || LOVABLE_API_KEY || "").trim();
+    const GOOGLE_API_KEY = Deno.env.get("GOOGLE_API_KEY") || Deno.env.get("GEMINI_API_KEY");
+    const ACTIVE_KEY = String(apiKey || GOOGLE_API_KEY || "").trim();
 
     if (!ACTIVE_KEY) {
-      throw new Error("LOVABLE_API_KEY is not configured");
+      throw new Error("GOOGLE_API_KEY is not configured. Please add your Gemini API key in settings or backend env.");
     }
 
     const systemPrompt = `You are an expert ATS resume reviewer.
-
-You must evaluate the full resume and return ONLY JSON (no markdown, no prose outside JSON).
-Use consistent scoring, not random scoring.
-Follow this exact schema:
-{
-  "overallScore": number, // 0-100
-  "atsScore": number, // 0-100
-  "summary": "string, max 220 chars",
-  "sections": [
-    {"id":"profile","score":number,"reason":"string"},
-    {"id":"education","score":number,"reason":"string"},
-    {"id":"skills","score":number,"reason":"string"},
-    {"id":"experience","score":number,"reason":"string"},
-    {"id":"projects","score":number,"reason":"string"},
-    {"id":"certifications","score":number,"reason":"string"}
-  ],
-  "improvements": ["string", "string", "string", "string"]
-}
-
-Rules:
-- Analyze realism, ATS keywords, structure, action verbs, measurable outcomes.
-- Keep reasons and improvements short and actionable.
-- No hallucinations.
-- Keep score differences realistic relative to provided baseline.
-- Never return fields outside the schema.`;
+    
+    You must evaluate the full resume and return ONLY VALID JSON (no markdown, no prose outside JSON).
+    Use consistent scoring, not random scoring.
+    Follow this exact schema:
+    {
+      "overallScore": number, // 0-100
+      "atsScore": number, // 0-100
+      "summary": "string, max 220 chars",
+      "sections": [
+        {"id":"profile","score":number,"reason":"string"},
+        {"id":"education","score":number,"reason":"string"},
+        {"id":"skills","score":number,"reason":"string"},
+        {"id":"experience","score":number,"reason":"string"},
+        {"id":"projects","score":number,"reason":"string"},
+        {"id":"certifications","score":number,"reason":"string"}
+      ],
+      "improvements": ["string", "string", "string", "string"]
+    }
+    
+    Rules:
+    - Analyze realism, ATS keywords, structure, action verbs, measurable outcomes.
+    - Keep reasons and improvements short and actionable.
+    - No hallucinations.
+    - Keep score differences realistic relative to provided baseline.
+    - Never return fields outside the schema.`;
 
     const userPayload = {
       baseline,
@@ -86,73 +86,61 @@ Rules:
       instruction: "Review this resume completely and return schema-compliant JSON only.",
     };
 
-    let response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+    // Construct the prompt for Gemini
+    const payload = {
+      contents: [
+        {
+          role: "user",
+          parts: [
+            { text: `System Instruction: ${systemPrompt}\n\nTask: Analyze the following resume data and return ONLY JSON.\n\n${JSON.stringify(userPayload)}` }
+          ]
+        }
+      ],
+      generationConfig: {
+        maxOutputTokens: 1000,
+        temperature: 0.2,
+        responseMimeType: "application/json" // Gemini 1.5 JSON mode
+      }
+    };
+
+    let response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${ACTIVE_KEY}`, {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${ACTIVE_KEY}`,
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({
-        model: "google/gemini-3-flash-preview",
-        temperature: 0.2,
-        messages: [
-          { role: "system", content: systemPrompt },
-          { role: "user", content: JSON.stringify(userPayload) },
-        ],
-      }),
+      body: JSON.stringify(payload),
     });
-
-    if (!response.ok && apiKey && LOVABLE_API_KEY && String(apiKey).trim() !== String(LOVABLE_API_KEY).trim()) {
-      response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${LOVABLE_API_KEY}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          model: "google/gemini-3-flash-preview",
-          temperature: 0.2,
-          messages: [
-            { role: "system", content: systemPrompt },
-            { role: "user", content: JSON.stringify(userPayload) },
-          ],
-        }),
-      });
-    }
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error("AI gateway error:", response.status, errorText);
+      console.error("Gemini API error:", response.status, errorText);
 
       if (response.status === 429) {
         return new Response(
           JSON.stringify({
             error: "rate_limit",
-            message: "AI scoring is temporarily unavailable due to high usage. Please try again shortly.",
+            message: "AI scoring is busy. Please try again shortly.",
           }),
           { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } },
         );
       }
 
-      if (response.status === 402) {
-        return new Response(
-          JSON.stringify({
-            error: "quota_exceeded",
-            message: "AI scoring quota exhausted. Please use rule-based scoring for now.",
-          }),
-          { status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" } },
-        );
-      }
-
       return new Response(
-        JSON.stringify({ error: "ai_error", message: "AI scoring is currently unavailable." }),
+        JSON.stringify({ error: "ai_error", message: "Failed to communicate with AI service." }),
         { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } },
       );
     }
 
     const data = await response.json();
-    const rawContent = data.choices?.[0]?.message?.content || "";
-    const parsed = parseJsonFromModel(rawContent);
+    const rawContent = data.candidates?.[0]?.content?.parts?.[0]?.text || "";
+
+    // Parse the JSON
+    let parsed = parseJsonFromModel(rawContent);
+    // Explicit clean-up for common markdown issues if JSON mode fails or adds wrappers
+    if (!parsed) {
+      const cleaned = rawContent.replace(/```json/g, "").replace(/```/g, "").trim();
+      try { parsed = JSON.parse(cleaned); } catch { /* ignore */ }
+    }
 
     if (!parsed || typeof parsed !== "object") {
       return new Response(

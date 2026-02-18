@@ -167,146 +167,77 @@ export function FloatingAiAssistant({ context, enabled = true }: FloatingAiAssis
     if (!userText) return;
     setMessages((prev) => [...prev, { role: "user", content: userText }]);
 
-    const resumeKeywords = /\b(resume|cv|summary|experience|project|skills|education|achievement|certification|internship|job|role|bullet|description|profile|work|career|qualification|objective|professional)\b/i;
+    const resumeKeywords = /\b(resume|cv|summary|experience|project|skills|education|achievement|certification|internship|job|role|bullet|description|profile|work|career|qualification|objective|professional|action|verb)\b/i;
     const isResumeRelated = resumeKeywords.test(userText.toLowerCase());
 
     const systemPrompt = isResumeRelated
-      ? `You are a professional resume writing assistant.
-
-STRICT OUTPUT RULES:
-- Write BETWEEN 6 and 8 short lines only
-- Keep it simple, natural, and human-written
-- Easy English, resume-ready, ATS-friendly
-- No bullet points, no numbering, no emojis
-- Avoid filler and repetition; keep it concise
-- Stay strictly on the users topic only
-- Do not add extra assumptions, stories, or unrelated points
-- Keep each line brief and direct
-
-CONTENT RULES:
-- Focus on achievements, responsibilities, impact, and skills
-- Prefer action verbs and measurable outcomes when possible
-- If the user is a fresher/student, keep it realistic and not exaggerated
-
-User context: ${context || "General resume assistance"}`
-      : `You are a friendly, conversational AI assistant like ChatGPT or Gemini.
-
-PERSONALITY:
-- Be warm, helpful, and engaging
-- Chat naturally in the user's language (English, Hindi, Hinglish, or any mix)
-- Show personality and empathy
-- Be knowledgeable and informative
-- Use casual, friendly tone
-
-CONVERSATION RULES:
-- Answer questions directly and helpfully
-- Provide useful information and insights
-- Ask follow-up questions when appropriate
-- Be supportive and encouraging
-- Share knowledge on various topics
-- Keep responses conversational (2-6 lines for simple queries, more for complex topics)
-- You can use emojis occasionally to be friendly
-- If asked about resumes, offer to help with that too
-
-IMPORTANT:
-- Respond naturally to greetings, questions, and conversations
-- Don't always mention resumes unless the user asks
-- Be a general-purpose helpful assistant
-- Match the user's energy and language style
-
-User context: ${context || "General conversation"}`;
+      ? `You are an expert resume consultant.
+STRICT RULES - BE EXTREMELY CONCISE:
+1. Output EXACTLY 2-3 short bullet points MAX.
+2. Each bullet must be under 10 words.
+3. No intro, no outro, no fluff.
+4. Be specific and actionable.
+5. Focus ONLY on the exact question asked.`
+      : `You are a helpful AI assistant.
+STRICT RULES - BE VERY BRIEF:
+1. Answer in 1 SHORT sentence ONLY.
+2. No detailed explanations.
+3. Be direct and to the point.
+4. If off-topic, redirect to resume help.`;
 
     const sanitize = (raw: string) => {
-      const cleanedText = String(raw || "")
+      let cleanedText = String(raw || "")
         .replace(/\r/g, "")
         .replace(/\s+\n/g, "\n")
         .replace(/\n\s+/g, "\n")
         .replace(/[ \t]+/g, " ")
+        .replace(/\*/g, "") // Remove bolding markdown
+        .replace(/`/g, "") // Remove code markdown
         .trim();
 
-      // For general chat, allow more natural responses
-      if (!isResumeRelated) {
-        // Just clean up excessive whitespace but keep the natural flow
-        const maxWords = 300;
-        const words = cleanedText.split(/\s+/).filter(Boolean);
-        if (words.length <= maxWords) return cleanedText;
-        return words.slice(0, maxWords).join(" ") + "...";
-      }
-
-      // For resume content, keep the strict formatting
+      // Split into lines
       let lines = cleanedText
         .split("\n")
         .map((l) => l.trim())
         .filter(Boolean);
-      if (lines.length <= 1) {
-        const sentences = cleanedText
-          .split(/(?<=[.!?])\s+/)
-          .map((s) => s.replace(/[.!?]+$/g, "").trim())
-          .filter(Boolean);
-        lines = sentences.length ? sentences : lines;
+
+      // Remove numbering if present (e.g. "1. ")
+      lines = lines.map(l => l.replace(/^\d+\.\s*/, "").replace(/^-\s*/, ""));
+
+      const maxLines = isResumeRelated ? 3 : 1;
+
+      if (lines.length > maxLines) {
+        lines = lines.slice(0, maxLines);
       }
-      const maxLines = 8;
-      const maxWords = 90;
-      const maxWordsPerLine = 16;
-      if (lines.length > maxLines) lines = lines.slice(0, maxLines);
-      lines = lines.map((line) => line.split(/\s+/).slice(0, maxWordsPerLine).join(" ").trim()).filter(Boolean);
-      const limited = lines.slice(0, maxLines);
-      const totalWords = limited.join(" ").split(/\s+/).filter(Boolean).length;
-      if (totalWords <= maxWords) return limited.join("\n");
-      const trimmed: string[] = [];
-      let wordsLeft = maxWords;
-      for (const line of limited) {
-        if (wordsLeft <= 0) break;
-        const words = line.split(/\s+/).filter(Boolean).slice(0, wordsLeft);
-        if (!words.length) continue;
-        trimmed.push(words.join(" "));
-        wordsLeft -= words.length;
-      }
-      return trimmed.join("\n");
+
+      // Further truncate each line if too long (max 8 words)
+      lines = lines.map(line => line.split(' ').slice(0, 8).join(' '));
+
+      return lines.join("\n");
     };
 
     try {
       const activeKey = getActiveApiKey();
       let aiText = "";
 
-      if (activeKey && !aiText) {
-        const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${activeKey}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            model: "google/gemini-3-flash-preview",
-            messages: [
-              { role: "system", content: systemPrompt },
-              { role: "user", content: userText },
-            ],
-          }),
-        });
-        if (response.ok) {
-          const data = await response.json();
-          aiText = sanitize(data?.choices?.[0]?.message?.content || "");
-        }
+      // Always use the backend function to hide the API URL and simplify logic
+      const { data, error } = await supabase.functions.invoke("ai-resume-assistant", {
+        body: { prompt: userText, context, apiKey: activeKey },
+      });
+
+      if (error) throw error;
+
+      if (data?.error === "rate_limit") {
+        toast({ variant: "destructive", title: "Rate Limit", description: data.message });
+        return;
+      }
+      if (data?.error === "quota_exceeded") {
+        toast({ variant: "destructive", title: "AI Quota Exhausted", description: data.message });
+        setOpen(false);
+        return;
       }
 
-      if (!aiText) {
-        const { data, error } = await supabase.functions.invoke("ai-resume-assistant", {
-          body: { prompt: userText, context, apiKey: activeKey },
-        });
-        if (error) throw error;
-
-        if (data?.error === "rate_limit") {
-          toast({ variant: "destructive", title: "Rate Limit", description: data.message });
-          return;
-        }
-        if (data?.error === "quota_exceeded") {
-          toast({ variant: "destructive", title: "AI Quota Exhausted", description: data.message });
-          setOpen(false);
-          return;
-        }
-        aiText = data?.content || "No response generated.";
-      }
+      aiText = sanitize(data?.content || "No response generated.");
 
       setMessages((prev) => [...prev, { role: "ai", content: aiText }]);
       bumpAiUsageMetric();
@@ -316,7 +247,7 @@ User context: ${context || "General conversation"}`;
       toast({
         variant: "destructive",
         title: "AI Error",
-        description: "Failed to get AI assistance. Please try again.",
+        description: "Failed to connect to AI service. Please try again.",
       });
     } finally {
       setLoading(false);

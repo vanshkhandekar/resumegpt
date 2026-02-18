@@ -85,9 +85,9 @@ END $$;
 CREATE TABLE IF NOT EXISTS public.admin_settings (
   id INT PRIMARY KEY DEFAULT 1,
   ai_enabled BOOLEAN NOT NULL DEFAULT true,
-  ai_provider TEXT NOT NULL DEFAULT 'lovable',
-  ai_model TEXT NOT NULL DEFAULT 'google/gemini-3-flash-preview',
-  max_lines INT NOT NULL DEFAULT 10,
+  ai_provider TEXT NOT NULL DEFAULT 'google',
+  ai_model TEXT NOT NULL DEFAULT 'gemini-1.5-flash',
+  max_lines INT NOT NULL DEFAULT 4,
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   CONSTRAINT admin_settings_singleton CHECK (id = 1)

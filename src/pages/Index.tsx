@@ -20,12 +20,14 @@ export default function Index() {
       <header className="sticky top-0 z-50 border-b border-border/70 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/85">
         <div className="mx-auto flex h-16 w-full max-w-6xl items-center justify-between px-4">
           <a href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl shadow-sm bg-primary">
-              <span className="text-xl font-bold text-white">R</span>
-            </div>
+            <img
+              src="/logo.svg"
+              alt="AI Resume Studio Logo"
+              className="h-10 w-10 object-contain"
+            />
             <div className="hidden sm:block">
-              <p className="text-xl font-bold text-foreground">ResumeGPT</p>
-              <p className="text-xs text-muted-foreground">AI Resume Builder</p>
+              <p className="text-xl font-bold text-foreground">AI Resume Studio</p>
+              <p className="text-xs text-muted-foreground">Professional Resume Builder</p>
             </div>
           </a>
 
@@ -110,7 +112,7 @@ export default function Index() {
         </div>
       </main>
 
-      <FloatingAiAssistant context="ResumeGPT - AI Resume Builder landing page" enabled />
+      <FloatingAiAssistant context="AI Resume Studio - Professional Resume Builder landing page" enabled />
     </div>
   );
 }

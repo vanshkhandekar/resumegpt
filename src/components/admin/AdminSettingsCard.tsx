@@ -21,12 +21,11 @@ type Settings = {
 };
 
 const MODELS = [
-  "google/gemini-3-flash-preview",
-  "google/gemini-3-pro-preview",
-  "google/gemini-2.5-flash",
-  "google/gemini-2.5-pro",
-  "openai/gpt-5-mini",
-  "openai/gpt-5",
+  "gemini-1.5-flash",
+  "gemini-1.5-pro",
+  "gpt-4o",
+  "gpt-4o-mini",
+  "claude-3-5-sonnet",
 ];
 
 export function AdminSettingsCard() {
@@ -35,7 +34,7 @@ export function AdminSettingsCard() {
   const [saving, setSaving] = useState(false);
   const [settings, setSettings] = useState<Settings | null>(null);
 
-  const maxLinesStr = useMemo(() => (settings ? String(settings.max_lines ?? 10) : "10"), [settings]);
+  const maxLinesStr = useMemo(() => (settings ? String(settings.max_lines ?? 4) : "4"), [settings]);
 
   useEffect(() => {
     let mounted = true;
@@ -57,9 +56,9 @@ export function AdminSettingsCard() {
       setSettings(
         data ?? {
           ai_enabled: true,
-          ai_provider: "lovable",
-          ai_model: "google/gemini-3-flash-preview",
-          max_lines: 10,
+          ai_provider: "google",
+          ai_model: "gemini-1.5-flash",
+          max_lines: 4,
         },
       );
       setLoading(false);
@@ -128,7 +127,7 @@ export function AdminSettingsCard() {
             </div>
 
             <div className="grid gap-2">
-              <p className="text-sm font-medium">Max lines (6–10 recommended)</p>
+              <p className="text-sm font-medium">Max Output Lines (3-4 recommended)</p>
               <Input
                 inputMode="numeric"
                 value={maxLinesStr}

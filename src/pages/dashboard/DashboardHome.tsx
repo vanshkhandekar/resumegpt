@@ -13,7 +13,7 @@ export default function DashboardHome() {
             Build a recruiter-ready resume in minutes.
           </h1>
           <p className="mt-4 max-w-2xl text-lg text-muted-foreground">
-            Clean editing, smart AI suggestions, live A4 preview, and instant PDF export - all inside Resume GPT.
+            Clean editing, smart AI suggestions, live A4 preview, and instant PDF export - all inside AI Resume Studio.
           </p>
 
           <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:items-center">
@@ -41,7 +41,7 @@ export default function DashboardHome() {
             </div>
             <div className="flex items-center gap-2">
               <span className="inline-block h-2 w-2 rounded-full bg-secondary" />
-              <span className="text-foreground">AI help in 6-8 lines</span>
+              <span className="text-foreground">AI help in 3-4 lines</span>
             </div>
             <div className="flex items-center gap-2">
               <span className="inline-block h-2 w-2 rounded-full bg-accent" />
@@ -113,7 +113,7 @@ export default function DashboardHome() {
         <div className="mt-6 grid gap-6 md:grid-cols-4">
           {[
             { n: "01", t: "Fill details", d: "Profile, education, projects, experience." },
-            { n: "02", t: "Use AI (optional)", d: "Get polished content in 6-8 lines." },
+            { n: "02", t: "Use AI (optional)", d: "Get polished content in 3-4 lines." },
             { n: "03", t: "Pick template", d: "Clean, ATS-friendly formats." },
             { n: "04", t: "Export PDF", d: "Print-ready A4 resume." },
           ].map((s) => (
@@ -128,9 +128,9 @@ export default function DashboardHome() {
         </div>
       </section>
 
-      {/* Why Resume GPT */}
+      {/* Why AI Resume Studio */}
       <section className="mt-12 border-t pt-10">
-        <h2 className="text-2xl font-semibold tracking-tight text-foreground">Why Resume GPT</h2>
+        <h2 className="text-2xl font-semibold tracking-tight text-foreground">Why AI Resume Studio</h2>
         <p className="mt-1 text-muted-foreground">Designed to look premium, built to stay simple.</p>
 
         <div className="mt-6 grid gap-6 md:grid-cols-2">
@@ -169,7 +169,7 @@ export default function DashboardHome() {
 
       <footer className="mt-12 border-t py-10">
         <div className="flex flex-col gap-2 text-sm sm:flex-row sm:items-center sm:justify-between">
-          <p className="text-foreground">Resume GPT - AI Resume Builder</p>
+          <p className="text-foreground">AI Resume Studio - Professional Resume Builder</p>
           <p className="text-muted-foreground">© {new Date().getFullYear()}</p>
         </div>
       </footer>

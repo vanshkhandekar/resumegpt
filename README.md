@@ -1,73 +1,91 @@
-# Welcome to your Lovable project
+# AI Resume Studio
 
-## Project info
+![AI Resume Studio](https://images.unsplash.com/photo-1586281380349-632531db7ed4?auto=format&fit=crop&q=80&w=2070&ixlib=rb-4.0.3)
 
-**URL**: https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID
+**AI Resume Studio** is a professional, open-source resume builder designed to empower job seekers with AI-driven tools. Built with modern web technologies, it offers a seamless experience for creating ATS-friendly, aesthetically pleasing resumes in minutes.
 
-## How can I edit this code?
+![License](https://img.shields.io/badge/license-MIT-blue.svg)
+![React](https://img.shields.io/badge/React-18-61DAFB?logo=react&logoColor=black)
+![TypeScript](https://img.shields.io/badge/TypeScript-5.0-3178C6?logo=typescript&logoColor=white)
+![Vite](https://img.shields.io/badge/Vite-5.0-646CFF?logo=vite&logoColor=white)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.4-38B2AC?logo=tailwind-css&logoColor=white)
 
-There are several ways of editing your application.
+## 🚀 Features
 
-**Use Lovable**
+- **🤖 AI-Powered Writing Assistant**: Generate professional summaries and bullet points using advanced AI (Gemini).
+- **📄 ATS-Friendly Templates**: Professionally designed templates optimized for Applicant Tracking Systems.
+- **⚡ Real-Time Preview**: See your changes instantly as you type.
+- **📊 Resume Score**: Get instant feedback on your resume's strength and completeness.
+- **📥 PDF Export**: High-quality, watermark-free PDF downloads.
+- **💾 Local Data Privacy**: Your data is stored locally in your browser (optional cloud sync available).
+- **🎨 Modern UI**: Built with Shadcn UI and Tailwind CSS for a premium look and feel.
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and start prompting.
+## 🛠️ Tech Stack
 
-Changes made via Lovable will be committed automatically to this repo.
+- **Frontend**: React, TypeScript, Vite
+- **Styling**: Tailwind CSS, Shadcn UI, Lucide React
+- **State Management**: React Query, React Hook Form
+- **AI Integration**: Google Gemini API
+- **Routing**: React Router DOM
 
-**Use your preferred IDE**
+## 🏁 Getting Started
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+Follow these steps to set up the project locally.
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+### Prerequisites
 
-Follow these steps:
+- Node.js (v18 or higher)
+- npm or yarn
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+### Installation
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+1.  **Clone the repository**
+    ```bash
+    git clone https://github.com/yourusername/ai-resume-studio.git
+    cd ai-resume-studio
+    ```
 
-# Step 3: Install the necessary dependencies.
-npm i
+2.  **Install dependencies**
+    ```bash
+    npm install
+    ```
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-```
+3.  **Environment Setup**
+    Create a `.env` file in the root directory and add your API keys (optional for local dev, but required for AI features):
+    ```env
+    VITE_SUPABASE_URL=your_supabase_url
+    VITE_SUPABASE_ANON_KEY=your_supabase_key
+    ```
 
-**Edit a file directly in GitHub**
+4.  **Run the development server**
+    ```bash
+    npm run dev
+    ```
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+## 📦 Deployment
 
-**Use GitHub Codespaces**
+### Deploy to Vercel
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+1.  Push your code to a GitHub repository.
+2.  Import the project into Vercel.
+3.  Vercel will automatically detect the Vite settings.
+4.  Add your environment variables in the Vercel project settings.
+5.  Deploy!
 
-## What technologies are used for this project?
+## 🤝 Contributing
 
-This project is built with:
+Contributions are welcome! Please feel free to submit a Pull Request.
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+1.  Fork the repository.
+2.  Create your feature branch (`git checkout -b feature/AmazingFeature`).
+3.  Commit your changes (`git commit -m 'Add some AmazingFeature'`).
+4.  Push to the branch (`git push origin feature/AmazingFeature`).
+5.  Open a Pull Request.
 
-## How can I deploy this project?
+## 📄 License
 
-Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## Can I connect a custom domain to my Lovable project?
+---
 
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+*Developed with ❤️ by the Open Source Community.*

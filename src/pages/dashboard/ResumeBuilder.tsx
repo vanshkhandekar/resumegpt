@@ -417,7 +417,7 @@ export default function ResumeBuilder() {
                 <div className="grid gap-2">
                   <p className="text-sm font-medium">Professional Summary</p>
                   <p className="text-sm text-muted-foreground">
-                    AI optional hai: upar AI se generate karo, ya niche manual apna likho.
+                    Optional: Generate with AI above, or write manually below.
                   </p>
 
                   {/* AI box */}
@@ -433,7 +433,7 @@ export default function ResumeBuilder() {
                             key: "summary",
                             prompt:
                               summaryAiInput.trim() ||
-                              `Write a professional resume summary in 6–8 lines for: ${name || "a candidate"}. Headline: ${headline}.`,
+                              `Write a professional resume summary in 3–4 lines for: ${name || "a candidate"}. Headline: ${headline}.`,
                             onApply: (t) => setSummary(t),
                           })
                         }
@@ -442,12 +442,12 @@ export default function ResumeBuilder() {
                       </Button>
                     </div>
                     <Textarea
-                      placeholder="AI ke liye details likho (role, skills, goal). Example: BCA student, frontend, HTML CSS JS, fresher, ATS friendly."
+                      placeholder="Enter details for AI (role, skills, goals). Example: BCA student, frontend, HTML CSS JS, fresher, ATS friendly."
                       value={summaryAiInput}
                       onChange={(e) => setSummaryAiInput(e.target.value)}
                       className="min-h-[90px]"
                     />
-                    <p className="text-xs text-muted-foreground">Generate karne ke baad output niche manual box me aa jayega.</p>
+                    <p className="text-xs text-muted-foreground">Generated content will appear in the box below for editing.</p>
                   </div>
 
                   {/* Manual box */}
@@ -459,7 +459,7 @@ export default function ResumeBuilder() {
                       onChange={(e) => setSummary(e.target.value)}
                       className="min-h-[120px]"
                     />
-                    <p className="text-xs text-muted-foreground">AI use na karna ho to yahin directly likho.</p>
+                    <p className="text-xs text-muted-foreground">Write directly here if you prefer manual entry.</p>
                   </div>
                 </div>
               </CardContent>
@@ -595,7 +595,7 @@ export default function ResumeBuilder() {
                                 onClick={() =>
                                   aiGenerate({
                                     key: `project_${idx}`,
-                                    prompt: `Write 6–8 lines (no special symbols) as ATS-friendly bullet points (one per line) for a resume project named: ${p.name || "My Project"}.`,
+                                    prompt: `Write 3–4 lines (no special symbols) as ATS-friendly bullet points (one per line) for a resume project named: ${p.name || "My Project"}.`,
                                     onApply: (t) =>
                                       setProjects((pp) => pp.map((x, i) => (i === idx ? { ...x, bullets: t } : x))),
                                   })
@@ -652,7 +652,7 @@ export default function ResumeBuilder() {
                     onClick={() =>
                       aiGenerate({
                         key: "skills",
-                        prompt: `Suggest a strong skills list for a fresher resume in 6–8 lines. Candidate: ${headline || "student"}. Return skills comma separated.`,
+                        prompt: `Suggest a strong skills list for a fresher resume in 3–4 lines. Candidate: ${headline || "student"}. Return skills comma separated.`,
                         onApply: (t) => setSkills(t),
                       })
                     }
@@ -708,7 +708,7 @@ export default function ResumeBuilder() {
                     onClick={() =>
                       aiGenerate({
                         key: "achievements",
-                        prompt: `Write 6 to 8 ATS-friendly achievement lines for a fresher resume. Headline: ${headline || "student"}.`,
+                        prompt: `Write 3 to 4 ATS-friendly achievement lines for a fresher resume. Headline: ${headline || "student"}.`,
                         onApply: (t) => setAchievements(t),
                       })
                     }
@@ -789,7 +789,7 @@ export default function ResumeBuilder() {
                                 onClick={() =>
                                   aiGenerate({
                                     key: `exp_${idx}`,
-                                    prompt: `Write ATS-friendly resume bullets (one per line) in 6–8 lines for role: ${ex.role || "Role"} at ${ex.company || "Company"}.`,
+                                    prompt: `Write ATS-friendly resume bullets (one per line) in 3–4 lines for role: ${ex.role || "Role"} at ${ex.company || "Company"}.`,
                                     onApply: (t) =>
                                       setExperience((p) => p.map((x, i) => (i === idx ? { ...x, bullets: t } : x))),
                                   })
