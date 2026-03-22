@@ -1211,141 +1211,151 @@ export default function ResumeBuilder() {
                 const isColor = template?.kind === "color";
                 const design = template?.design || "classic";
 
-                // Template-specific styles
+                // Template                // Template-specific styles
                 const getTemplateStyles = () => {
+                  const base = { headerStyle: "text-center mb-4 pb-4 border-b", nameStyle: "font-bold text-3xl text-slate-900", accentBorder: false, twoColumn: false, compact: false, sharp: false, fontFamily: "font-sans", sectionTitle: "text-sm font-bold uppercase tracking-wider border-b-2 pb-1 mb-3 text-slate-800", photoSquare: false };
                   switch (design) {
                     case "minimal":
-                      return { headerStyle: "text-left pl-0", nameStyle: "font-light text-2xl", accentBorder: false };
+                      return { ...base, headerStyle: "text-left pl-0 mb-6", nameStyle: "font-light text-4xl tracking-wide", sectionTitle: "text-sm font-light uppercase tracking-widest text-slate-400 mb-3" };
                     case "modern":
-                      return { headerStyle: "flex justify-between items-start border-b pb-2", nameStyle: "font-bold text-xl", accentBorder: false };
+                      return { ...base, headerStyle: "flex justify-between items-center border-b-2 pb-5 mb-6", nameStyle: "font-bold text-4xl tracking-tight text-slate-900", sectionTitle: "text-base font-bold text-slate-900 border-b-2 pb-2 mb-4", photoSquare: true };
                     case "executive":
-                      return { headerStyle: "bg-gray-900 text-white p-3 -mx-5 -mt-5 mb-4 rounded-t", nameStyle: "font-bold text-xl text-white", accentBorder: false };
+                      return { ...base, headerStyle: "bg-slate-900 text-white p-6 -mx-5 -mt-5 mb-6 shadow-sm", nameStyle: "font-serif text-4xl font-bold text-white", fontFamily: "font-serif", sectionTitle: "text-base font-serif font-bold text-slate-900 border-b pb-1 mb-4 uppercase tracking-wider" };
                     case "twocol":
-                      return { headerStyle: "flex gap-4", nameStyle: "font-semibold text-xl", accentBorder: false, twoColumn: true };
+                      return { ...base, headerStyle: "flex gap-6 items-center mb-6 border-b pb-4", nameStyle: "font-semibold text-3xl text-slate-800", twoColumn: true, sectionTitle: "text-sm font-bold uppercase tracking-wider mb-3 text-slate-800" };
                     case "compact":
-                      return { headerStyle: "text-left", nameStyle: "font-bold text-lg tracking-tight", accentBorder: false, compact: true };
+                      return { ...base, headerStyle: "text-left mb-4", nameStyle: "font-bold text-2xl tracking-tight", compact: true, sectionTitle: "text-xs font-bold uppercase bg-slate-100 p-1.5 mb-2 mt-4 text-slate-800", photoSquare: true };
                     case "atspro":
-                      return { headerStyle: "uppercase tracking-wide", nameStyle: "font-bold text-xl uppercase tracking-widest", accentBorder: false };
+                      return { ...base, headerStyle: "text-center uppercase tracking-wide border-b-2 pb-4 mb-5", nameStyle: "font-bold text-3xl uppercase tracking-widest text-slate-900", sectionTitle: "text-sm font-bold uppercase tracking-widest border-b-2 pb-1 mb-3 text-slate-900" };
                     case "slate":
-                      return { headerStyle: "bg-gray-50 p-3 -mx-5 -mt-5 mb-4", nameStyle: "font-semibold text-xl text-gray-700", accentBorder: false };
+                      return { ...base, headerStyle: "bg-slate-50 p-6 -mx-5 -mt-5 mb-6 border-b", nameStyle: "font-semibold text-3xl text-slate-800 tracking-tight", fontFamily: "font-mono", sectionTitle: "text-sm font-mono font-semibold uppercase tracking-wider mb-3 text-slate-700 border-b border-dashed pb-1" };
                     case "nimbus":
-                      return { headerStyle: "", nameStyle: "font-medium text-xl", accentBorder: true, borderStyle: "border-gray-200" };
+                      return { ...base, headerStyle: "text-center mb-6", nameStyle: "font-medium text-4xl text-slate-800", accentBorder: true, sectionTitle: "text-sm font-medium uppercase tracking-widest mb-3 text-slate-400 text-center", fontFamily: "font-serif", photoSquare: true };
                     case "vertex":
-                      return { headerStyle: "", nameStyle: "font-bold text-xl", accentBorder: false, sharp: true };
-                    default:
-                      return { headerStyle: "text-center border-b pb-2", nameStyle: "font-bold text-xl", accentBorder: false };
+                      return { ...base, headerStyle: "mb-6 border-l-8 pl-4", nameStyle: "font-black text-4xl tracking-tighter text-slate-900", sharp: true, sectionTitle: "text-base font-black uppercase tracking-tight mb-3 text-slate-900 bg-slate-100 pl-3 py-1.5 border-l-4" };
+                    default: // Color templates & fallback
+                      return { ...base, headerStyle: "text-left mb-6 pb-4 border-b", nameStyle: "font-bold text-4xl text-slate-900", sectionTitle: "text-base font-bold uppercase tracking-wider mb-3 border-b-2 pb-1" };
                   }
                 };
 
                 const styles = getTemplateStyles();
 
+                const SectionTitle = ({ title }: { title: string }) => (
+                  <p 
+                    className={`${styles.sectionTitle} mt-5`} 
+                    style={isColor && accent ? { borderColor: accent, color: accent } : {}}
+                  >
+                    {title}
+                  </p>
+                );
+
                 return (
                   <div
-                    className="rounded-md border border-slate-200 bg-white p-5 text-slate-900 shadow-sm"
+                    className={`rounded-md bg-white p-7 text-slate-900 shadow-sm ${styles.fontFamily} min-h-[800px] overflow-hidden`}
                     style={{
-                      borderLeft: accent ? `4px solid ${accent}` : "1px solid #e2e8f0"
+                      borderLeft: accent && styles.accentBorder ? `6px solid ${accent}` : undefined,
+                      borderTop: isColor && accent && !styles.accentBorder ? `6px solid ${accent}` : undefined,
                     }}>
                     <div>
                       {/* Template Header */}
-                      {isColor && accent && (
-                        <div className="-mx-5 -mt-5 mb-4 rounded-t-md px-5 py-3" style={{ background: `linear-gradient(90deg, ${accent}, ${accent}99)` }}>
-                          <p className="text-xl font-bold text-white">{name || "Your Name"}</p>
-                          {headline && <p className="text-sm text-white/90">{headline}</p>}
-                        </div>
-                      )}
-
-                      {!isColor && (
-                        <div className={`flex items-start gap-3 ${styles.twoColumn ? 'flex-col' : ''}`}>
-                          {photoDataUrl ? (
-                            <img src={photoDataUrl} alt="Profile photo" className="h-12 w-12 rounded-full object-cover" />
-                          ) : null}
-                          <div className={styles.headerStyle}>
-                            <p className={styles.nameStyle}>{name || "Your Name"}</p>
-                            {headline ? <p className="text-sm text-slate-600">{headline}</p> : null}
-                            <p className="mt-2 text-sm text-slate-500">
-                              {(email || phone)
-                                ? `${email ? `📧 ${email}` : ""}${email && phone ? "  •  " : ""}${phone ? `📱 ${phone}` : ""}`
-                                : "📧 Email  •  📱 Phone"}
-                            </p>
+                      {isColor && accent && design !== "modern" && design !== "twocol" ? (
+                        <div className="-mx-7 -mt-7 mb-6 rounded-t-sm px-7 py-6" style={{ background: `linear-gradient(135deg, ${accent}, ${accent}dd)` }}>
+                          <div className={`flex items-center gap-6 ${styles.twoColumn ? 'flex-col items-start' : ''}`}>
+                            {photoDataUrl && (
+                              <img src={photoDataUrl} alt="Profile photo" className={`h-24 w-24 object-cover shadow-md ${styles.photoSquare ? 'rounded-lg' : 'rounded-full border-4 border-white/20'}`} />
+                            )}
+                            <div>
+                               <p className="text-3xl font-bold text-white tracking-tight">{name || "Your Name"}</p>
+                               {headline && <p className="text-lg text-white/90 mt-1 font-medium">{headline}</p>}
+                               <p className="mt-3 text-sm text-white/80 font-medium tracking-wide">
+                                 {(email || phone)
+                                   ? `${email ? `${email}` : ""}${email && phone ? "  |  " : ""}${phone ? `${phone}` : ""}`
+                                   : "email@example.com  |  +1 234 567 890"}
+                               </p>
+                            </div>
                           </div>
                         </div>
-                      )}
-
-                      {isColor && (
-                        <div className="mt-2 text-sm text-slate-600">
-                          {(email || phone)
-                            ? `${email ? `📧 ${email}` : ""}${email && phone ? "  •  " : ""}${phone ? `📱 ${phone}` : ""}`
-                            : "📧 Email  •  📱 Phone"}
+                      ) : (
+                        <div className={`flex items-center gap-6 ${styles.headerStyle}`} style={isColor && design === "vertex" ? { borderLeftColor: accent } : {}}>
+                          {photoDataUrl && (
+                            <img src={photoDataUrl} alt="Profile photo" className={`h-24 w-24 object-cover shadow-sm ${styles.photoSquare ? 'rounded-md' : 'rounded-full border-2 border-slate-100'}`} />
+                          )}
+                          <div className="flex-1">
+                            <p className={styles.nameStyle} style={isColor ? { color: accent } : {}}>{name || "Your Name"}</p>
+                            {headline && <p className="text-lg text-slate-600 mt-1">{headline}</p>}
+                            <p className="mt-2 text-sm font-medium text-slate-500">
+                              {(email || phone)
+                                ? `${email ? `${email}` : ""}${email && phone ? "  |  " : ""}${phone ? `${phone}` : ""}`
+                                : "email@example.com  |  +1 234 567 890"}
+                            </p>
+                          </div>
                         </div>
                       )}
                     </div>
 
                     {summary ? (
-                      <>
-                        <Separator className="my-4" />
-                        <p className="whitespace-pre-line text-sm text-slate-700">{summary}</p>
-                      </>
+                      <div className="mb-4">
+                        <p className="whitespace-pre-line text-[13.5px] leading-relaxed text-slate-700">{summary}</p>
+                      </div>
                     ) : null}
 
                     {order.map((id) => {
                       if (!sectionEnabled[id]) return null;
                       if (id === "education") {
+                        const items = education.filter((e) => e.school || e.degree || e.year);
+                        if (!items.length) return null;
                         return (
-                          <div key={id}>
-                            <Separator className="my-4" />
-                            <p className="text-sm font-semibold">Education</p>
-                            <div className="mt-2 grid gap-2">
-                              {education
-                                .filter((e) => e.school || e.degree || e.year)
-                                .map((e, i) => (
-                                  <div key={i} className="text-sm text-slate-600">
-                                    <p className="font-medium text-slate-900">{e.school || "College / School"}</p>
-                                    <p>{[e.degree, e.year].filter(Boolean).join(" — ")}</p>
+                          <div key={id} className="mb-4">
+                            <SectionTitle title="Education" />
+                            <div className="grid gap-3">
+                              {items.map((e, i) => (
+                                <div key={i} className="text-[13.5px] text-slate-700 flex justify-between items-start">
+                                  <div>
+                                    <p className="font-bold text-slate-900">{e.school || "University Name"}</p>
+                                    <p className="italic text-slate-600">{e.degree}</p>
                                   </div>
-                                ))}
+                                  <div className="text-right whitespace-nowrap text-slate-500 font-medium ml-4">
+                                    {e.year}
+                                  </div>
+                                </div>
+                              ))}
                             </div>
                           </div>
                         );
                       }
                       if (id === "projects") {
+                        const items = projects.filter((p) => p.name || p.bullets);
+                        if (!items.length) return null;
                         return (
-                          <div key={id}>
-                            <Separator className="my-4" />
-                            <p className="text-sm font-semibold">Projects</p>
-                            <div className="mt-2 grid gap-3">
-                              {projects
-                                .filter((p) => p.name || p.bullets)
-                                .map((p, i) => (
-                                  <div key={i}>
-                                    <p className="text-sm font-medium">{p.name || "Project"}</p>
-                                    <ul className="mt-1 list-disc space-y-1 pl-5 text-sm text-slate-600">
-                                      {p.bullets
-                                        .split("\n")
-                                        .map((b) => b.trim())
-                                        .filter(Boolean)
-                                        .map((b, j) => (
-                                          <li key={j}>{b}</li>
-                                        ))}
-                                    </ul>
-                                  </div>
-                                ))}
+                          <div key={id} className="mb-4">
+                            <SectionTitle title="Projects" />
+                            <div className="grid gap-4">
+                              {items.map((p, i) => (
+                                <div key={i}>
+                                  <p className="text-[14px] font-bold text-slate-900">{p.name || "Project Title"}</p>
+                                  <ul className="mt-1.5 list-disc space-y-1 pl-5 text-[13px] leading-relaxed text-slate-700 marker:text-slate-400">
+                                    {p.bullets.split("\n").map((b) => b.trim()).filter(Boolean).map((b, j) => (
+                                        <li key={j}>{b}</li>
+                                      ))}
+                                  </ul>
+                                </div>
+                              ))}
                             </div>
                           </div>
                         );
                       }
                       if (id === "skills") {
-                        const list = skills
-                          .split(/\n|,/)
-                          .map((s) => s.trim())
-                          .filter(Boolean);
+                        const list = skills.split(/\n|,/).map((s) => s.trim()).filter(Boolean);
                         if (!list.length) return null;
                         return (
-                          <div key={id}>
-                            <Separator className="my-4" />
-                            <p className="text-sm font-semibold">Skills</p>
-                            <div className="mt-2 flex flex-wrap gap-2">
+                          <div key={id} className="mb-4">
+                            <SectionTitle title="Skills & Competencies" />
+                            <div className="mt-2 flex flex-wrap gap-1.5">
                               {list.map((s, i) => (
-                                <span key={i} className="rounded-full border border-slate-200 bg-slate-100 px-2.5 py-1 text-xs text-slate-700">
+                                <span key={i} 
+                                  className="rounded bg-slate-100 px-2.5 py-1 text-[12px] font-medium text-slate-700"
+                                  style={isColor && accent ? { backgroundColor: `${accent}15`, color: accent } : {}}
+                                >
                                   {s}
                                 </span>
                               ))}
@@ -1354,18 +1364,15 @@ export default function ResumeBuilder() {
                         );
                       }
                       if (id === "languages") {
-                        const list = languages
-                          .split(/\n|,/)
-                          .map((s) => s.trim())
-                          .filter(Boolean);
+                        const list = languages.split(/\n|,/).map((s) => s.trim()).filter(Boolean);
                         if (!list.length) return null;
                         return (
-                          <div key={id}>
-                            <Separator className="my-4" />
-                            <p className="text-sm font-semibold">Languages</p>
-                            <div className="mt-2 flex flex-wrap gap-2">
+                          <div key={id} className="mb-4">
+                            <SectionTitle title="Languages" />
+                            <div className="mt-2 flex flex-wrap gap-3 text-[13.5px] text-slate-700">
                               {list.map((lang, i) => (
-                                <span key={i} className="rounded-full border border-slate-200 bg-slate-100 px-2.5 py-1 text-xs text-slate-700">
+                                <span key={i} className="flex items-center gap-1.5">
+                                  <span className="h-1.5 w-1.5 rounded-full bg-slate-400" style={isColor ? { backgroundColor: accent! } : {}}></span>
                                   {lang}
                                 </span>
                               ))}
@@ -1374,16 +1381,12 @@ export default function ResumeBuilder() {
                         );
                       }
                       if (id === "achievements") {
-                        const list = achievements
-                          .split("\n")
-                          .map((s) => s.trim())
-                          .filter(Boolean);
+                        const list = achievements.split("\n").map((s) => s.trim()).filter(Boolean);
                         if (!list.length) return null;
                         return (
-                          <div key={id}>
-                            <Separator className="my-4" />
-                            <p className="text-sm font-semibold">Achievements</p>
-                            <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-slate-600">
+                          <div key={id} className="mb-4">
+                            <SectionTitle title="Key Achievements" />
+                            <ul className="mt-2 list-disc space-y-1.5 pl-5 text-[13px] leading-relaxed text-slate-700 marker:text-slate-400">
                               {list.map((item, i) => (
                                 <li key={i}>{item}</li>
                               ))}
@@ -1392,42 +1395,42 @@ export default function ResumeBuilder() {
                         );
                       }
                       if (id === "experience") {
+                        const items = experience.filter((e) => e.company || e.role || e.bullets);
+                        if (!items.length) return null;
                         return (
-                          <div key={id}>
-                            <Separator className="my-4" />
-                            <p className="text-sm font-semibold">Experience</p>
-                            <div className="mt-2 grid gap-3">
-                              {experience
-                                .filter((e) => e.company || e.role || e.bullets)
-                                .map((e, i) => (
-                                  <div key={i}>
-                                    <p className="text-sm font-medium">{[e.role, e.company].filter(Boolean).join(" — ") || "Role — Company"}</p>
-                                    <ul className="mt-1 list-disc space-y-1 pl-5 text-sm text-slate-600">
-                                      {e.bullets
-                                        .split("\n")
-                                        .map((b) => b.trim())
-                                        .filter(Boolean)
-                                        .map((b, j) => (
-                                          <li key={j}>{b}</li>
-                                        ))}
-                                    </ul>
+                          <div key={id} className="mb-4">
+                            <SectionTitle title="Professional Experience" />
+                            <div className="grid gap-5">
+                              {items.map((e, i) => (
+                                <div key={i}>
+                                  <div className="flex justify-between items-start mb-1">
+                                    <div>
+                                      <p className="text-[14px] font-bold text-slate-900">{e.role || "Job Title"}</p>
+                                      <p className="text-[13.5px] font-medium text-slate-600">{e.company || "Company Name"}</p>
+                                    </div>
                                   </div>
-                                ))}
+                                  <ul className="mt-2 list-disc space-y-1.5 pl-5 text-[13px] leading-relaxed text-slate-700 marker:text-slate-400">
+                                    {e.bullets.split("\n").map((b) => b.trim()).filter(Boolean).map((b, j) => (
+                                        <li key={j}>{b}</li>
+                                      ))}
+                                  </ul>
+                                </div>
+                              ))}
                             </div>
                           </div>
                         );
                       }
                       return (
-                        <div key={id}>
-                          <Separator className="my-4" />
-                          <p className="text-sm font-semibold">Certifications</p>
-                          <div className="mt-2 grid gap-2">
-                            {certs
-                              .filter((c) => c.name || c.org || c.year)
-                              .map((c, i) => (
-                                <div key={i} className="text-sm text-slate-600">
-                                  <p className="font-medium text-slate-900">{c.name || "Certification"}</p>
-                                  <p>{[c.org, c.year].filter(Boolean).join(" — ")}</p>
+                        <div key={id} className="mb-4">
+                          <SectionTitle title="Certifications" />
+                          <div className="grid gap-2 text-[13.5px]">
+                            {certs.filter((c) => c.name || c.org || c.year).map((c, i) => (
+                                <div key={i} className="flex justify-between items-start text-slate-700">
+                                  <div>
+                                    <span className="font-bold text-slate-900">{c.name || "Certification"}</span>
+                                    {c.org && <span className="text-slate-600"> — {c.org}</span>}
+                                  </div>
+                                  <span className="text-slate-500 font-medium ml-4">{c.year}</span>
                                 </div>
                               ))}
                           </div>
@@ -1435,7 +1438,7 @@ export default function ResumeBuilder() {
                       );
                     })}
                   </div>
-                )
+                );
               })()}
             </CardContent>
           </Card>

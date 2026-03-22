@@ -17,7 +17,6 @@ import { useAuth } from "@/hooks/useAuth";
 
 export default function DashboardHome() {
   const { resumes, loading, fetchResumes, createResume, deleteResume, duplicateResume } = useResumes();
-  const { user } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -38,7 +37,7 @@ export default function DashboardHome() {
         <div className="mb-6 flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold tracking-tight">
-              Welcome back, {user?.user_metadata?.full_name?.split(" ")[0] || "User"}!
+              Welcome back!
             </h1>
             <p className="text-muted-foreground">Here is an overview of your resumes and usage.</p>
           </div>
