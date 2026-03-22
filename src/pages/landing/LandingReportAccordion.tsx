@@ -38,7 +38,7 @@ export function LandingReportAccordion() {
               <dl className="grid gap-4 text-sm">
                 <div className="flex items-center gap-2">
                   <Badge className="text-xs bg-gradient-to-r from-primary to-secondary">Project Name</Badge>
-                  <dd className="font-medium">AI Resume Studio (Professional Resume Builder)</dd>
+                  <dd className="font-medium">ResumeGPT (Professional Resume Builder)</dd>
                 </div>
                 <div className="grid gap-4 sm:grid-cols-2">
                   <div className="flex items-center gap-2">
@@ -112,7 +112,7 @@ export function LandingReportAccordion() {
               <p className="text-sm leading-relaxed text-muted-foreground">
                 A resume is a key document for internships, placements, and job applications. Many students find it difficult to
                 create a strong resume because they are unsure about the right format, what to include, and how to describe their
-                skills and work clearly. AI Resume Studio solves this by guiding users to enter details step-by-step and using AI
+                skills and work clearly. ResumeGPT solves this by guiding users to enter details step-by-step and using AI
                 assistance to improve the wording and structure. This makes resume creation faster, simpler, and more
                 professional.
               </p>
@@ -222,7 +222,7 @@ export function LandingReportAccordion() {
           <AccordionContent>
             <SectionCard>
               <p className="text-sm leading-relaxed text-muted-foreground">
-                AI Resume Studio demonstrates how AI can simplify resume building. The system helps students and job seekers
+                ResumeGPT demonstrates how AI can simplify resume building. The system helps students and job seekers
                 create professional resumes quickly and efficiently. Future enhancements may include multiple templates,
                 job-based suggestions, and integration with more AI services.
               </p>

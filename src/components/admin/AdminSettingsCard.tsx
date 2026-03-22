@@ -21,11 +21,12 @@ type Settings = {
 };
 
 const MODELS = [
+  "anthropic/claude-3-opus",
+  "anthropic/claude-3.5-sonnet",
   "gemini-1.5-flash",
   "gemini-1.5-pro",
   "gpt-4o",
   "gpt-4o-mini",
-  "claude-3-5-sonnet",
 ];
 
 export function AdminSettingsCard() {

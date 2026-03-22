@@ -6,7 +6,7 @@ import { Textarea } from "@/components/ui/textarea";
 export default function PromptPage() {
   const prompt = useMemo(
     () =>
-      `Create a web application called “AI Resume Studio — Professional Resume Builder” with these requirements.
+      `Create a web application called “ResumeGPT — Professional Resume Builder” with these requirements.
 
 GOAL
 Build a resume builder with a dashboard experience and an admin panel that controls global AI behavior and API key management.
@@ -18,7 +18,7 @@ TECH STACK
 - Backend via Supabase (database, auth, server functions)
 
 BRANDING + BASIC INFO (MUST BE VISIBLE AT TOP)
-- App name everywhere: AI Resume Studio
+- App name everywhere: ResumeGPT
 - Landing page and header must clearly show (immediately, not hidden):
   - College: Janaprabha College, Ramtek
   - Class: BCA 3rd Year
@@ -36,7 +36,7 @@ ROUTES
 
 PUBLIC LANDING PAGE (/)
 - Design the landing page like a professional academic report.
-- Hero must show AI Resume Studio + short subtitle.
+- Hero must show ResumeGPT + short subtitle.
 - Show the basic info strip (college/class/members) near the top (always visible).
 - Include “Build Resume” CTA linking to /create.
 - Include an accordion report section:

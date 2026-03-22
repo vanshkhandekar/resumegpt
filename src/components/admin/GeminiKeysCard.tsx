@@ -92,8 +92,8 @@ export function GeminiKeysCard() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Gemini API Keys</CardTitle>
-        <CardDescription>Add multiple keys for rotation/fallback. You can add keys later.</CardDescription>
+        <CardTitle>AI API Keys</CardTitle>
+        <CardDescription>Add Gemini or OpenRouter keys. OpenRouter keys must start with "sk-or-".</CardDescription>
       </CardHeader>
       <CardContent className="grid gap-4">
         <div className="grid gap-3">

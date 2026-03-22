@@ -22,11 +22,11 @@ export default function Index() {
           <a href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
             <img
               src="/logo.svg"
-              alt="AI Resume Studio Logo"
+              alt="ResumeGPT Logo"
               className="h-10 w-10 object-contain"
             />
             <div className="hidden sm:block">
-              <p className="text-xl font-bold text-foreground">AI Resume Studio</p>
+              <p className="text-xl font-bold text-foreground">ResumeGPT</p>
               <p className="text-xs text-muted-foreground">Professional Resume Builder</p>
             </div>
           </a>
@@ -99,8 +99,8 @@ export default function Index() {
           <footer className="border border-border rounded-2xl p-8 bg-card/80 backdrop-blur">
             <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
               <div>
-                <p className="font-bold text-xl text-foreground">AI Resume Studio</p>
-                <p className="text-sm text-muted-foreground">Janaprabha College, Ramtek • BCA 3rd Year</p>
+                <p className="font-bold text-xl text-foreground">ResumeGPT</p>
+                <p className="text-sm text-muted-foreground">Professional Resume Builder</p>
               </div>
               <div className="flex gap-4">
                 <a href="/admin" className="text-primary font-semibold hover:underline">Admin Panel</a>
@@ -112,7 +112,7 @@ export default function Index() {
         </div>
       </main>
 
-      <FloatingAiAssistant context="AI Resume Studio - Professional Resume Builder landing page" enabled />
+      <FloatingAiAssistant context="ResumeGPT - Professional Resume Builder landing page" enabled />
     </div>
   );
 }

@@ -14,6 +14,9 @@ import Admin from "./pages/Admin";
 import NotFound from "./pages/NotFound";
 import PromptPage from "./pages/Prompt";
 import Index from "./pages/Index";
+import Auth from "./pages/Auth";
+import { AuthProvider } from "./contexts/AuthContext";
+import { ProtectedRoute } from "./components/auth/ProtectedRoute";
 
 const queryClient = new QueryClient();
 
@@ -23,28 +26,34 @@ const App = () => (
       <TooltipProvider>
         <Toaster />
         <Sonner />
-        <BrowserRouter>
-          <Routes>
-            <Route path="/admin" element={<Admin />} />
-            {/* Public landing page */}
-            <Route path="/" element={<Index />} />
+        <AuthProvider>
+          <BrowserRouter>
+            <Routes>
+              <Route path="/admin" element={<ProtectedRoute><Admin /></ProtectedRoute>} />
+              {/* Public landing page */}
+              <Route path="/" element={<Index />} />
+              <Route path="/auth" element={<Auth />} />
 
-            {/* Main app */}
-            <Route element={<DashboardLayout />}>
-              <Route path="/dashboard" element={<DashboardHome />} />
-              <Route path="/create" element={<ResumeBuilder />} />
-              <Route path="/templates" element={<Templates />} />
-              <Route path="/score" element={<ResumeScore />} />
-              <Route path="/export" element={<ExportResume />} />
-              <Route path="/prompt" element={<PromptPage />} />
-            </Route>
+              {/* Main app */}
+              <Route element={<ProtectedRoute><DashboardLayout /></ProtectedRoute>}>
+                <Route path="/dashboard" element={<DashboardHome />} />
+                <Route path="/create" element={<ResumeBuilder />} />
+                <Route path="/create/:id" element={<ResumeBuilder />} />
+                <Route path="/templates" element={<Templates />} />
+                <Route path="/score/:id" element={<ResumeScore />} />
+                <Route path="/export/:id" element={<ExportResume />} />
+                <Route path="/prompt" element={<PromptPage />} />
+              </Route>
 
-            {/* Backwards-compat */}
-            <Route path="/dashboard/*" element={<Navigate to="/dashboard" replace />} />
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </BrowserRouter>
+              {/* Backwards-compat */}
+              <Route path="/dashboard/*" element={<Navigate to="/dashboard" replace />} />
+              <Route path="/score" element={<Navigate to="/dashboard" replace />} />
+              <Route path="/export" element={<Navigate to="/dashboard" replace />} />
+              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </BrowserRouter>
+        </AuthProvider>
       </TooltipProvider>
     </ThemeProvider>
   </QueryClientProvider>

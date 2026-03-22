@@ -14,6 +14,8 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 
+import { UserMenu } from "@/components/auth/UserMenu";
+
 const items = [
   { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
   { title: "Create Resume", url: "/create", icon: FileText },
@@ -32,11 +34,11 @@ export function AppSidebar() {
 
   return (
     <Sidebar collapsible="icon" className="border-r">
-      <SidebarContent className="bg-background">
+      <SidebarContent className="bg-background flex flex-col justify-between h-full">
         <SidebarGroup>
           <Link to="/" className="flex items-center gap-2 px-2 py-4">
             <span className="text-2xl">📄</span>
-            {!collapsed && <span className="font-bold text-foreground">AI Resume Studio</span>}
+            {!collapsed && <span className="font-bold text-foreground">ResumeGPT</span>}
           </Link>
           <SidebarGroupContent>
             <SidebarMenu className="gap-1">
@@ -58,6 +60,12 @@ export function AppSidebar() {
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
+        
+        <div className="p-4 mt-auto border-t">
+          <div className="flex items-center justify-center">
+            <UserMenu />
+          </div>
+        </div>
       </SidebarContent>
     </Sidebar>
   );

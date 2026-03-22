@@ -1,4 +1,5 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
 import { ArrowDown, ArrowUp, Award, Briefcase, FolderKanban, GraduationCap, Languages, Plus, Trophy, Trash2, UserRound } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -12,6 +13,9 @@ import { useToast } from "@/hooks/use-toast";
 import { Link } from "react-router-dom";
 import { EmptyStateCard } from "@/components/resume/EmptyStateCard";
 import { StepProgressHeader } from "@/components/resume/StepProgressHeader";
+import { SaveIndicator } from "@/components/resume/SaveIndicator";
+import { useResumes } from "@/hooks/useResumes";
+import { useAutoSave } from "@/hooks/useAutoSave";
 import { bumpAiUsageMetric, bumpResumeCreatedMetric, bumpTemplateUsageMetric, getActiveApiKey, isTemplateVisible } from "@/lib/demoStorage";
 
 type Education = { school: string; degree: string; year: string };
@@ -32,6 +36,8 @@ type StepId =
   | "preview";
 
 export default function ResumeBuilder() {
+  const { id } = useParams<{ id: string }>();
+  const { getResume } = useResumes();
   const { toast } = useToast();
 
   const [step, setStep] = useState<StepId>("profile");
@@ -208,6 +214,48 @@ export default function ResumeBuilder() {
     [showEducation, showProjects, showSkills, showLanguages, showAchievements, showExperience, showCerts],
   );
 
+  useEffect(() => {
+    if (!id) return;
+    const fetchIt = async () => {
+      const resume = await getResume(id);
+      if (resume) {
+        if (resume.data) {
+          const d = resume.data;
+          setName(d.name || "");
+          setHeadline(d.headline || "");
+          setEmail(d.email || "");
+          setPhone(d.phone || "");
+          setSummary(d.summary || "");
+          setPhotoDataUrl(d.photoDataUrl || "");
+          setSkills(d.skills || "");
+          setLanguages(d.languages || "");
+          setAchievements(d.achievements || "");
+          setEducation(d.education || []);
+          setProjects(d.projects || []);
+          setExperience(d.experience || []);
+          setCerts(d.certs || []);
+        }
+        if (resume.template_id) setSelectedTemplate(resume.template_id);
+        if (resume.section_order) setOrder(resume.section_order as any);
+        if (resume.section_enabled) {
+          const se = resume.section_enabled;
+          setShowEducation(se.education ?? true);
+          setShowProjects(se.projects ?? true);
+          setShowSkills(se.skills ?? true);
+          setShowLanguages(se.languages ?? true);
+          setShowAchievements(se.achievements ?? true);
+          setShowExperience(se.experience ?? true);
+          setShowCerts(se.certs ?? true);
+        }
+      }
+    };
+    fetchIt();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id]);
+
+  const currentData = useMemo(() => ({ name, headline, email, phone, summary, photoDataUrl, skills, languages, achievements, education, projects, experience, certs }), [name, headline, email, phone, summary, photoDataUrl, skills, languages, achievements, education, projects, experience, certs]);
+  const { isSaving, lastSavedAt } = useAutoSave(id || "", currentData, selectedTemplate, order, sectionEnabled);
+
   const move = (id: (typeof order)[number], dir: -1 | 1) => {
     setOrder((prev) => {
       const i = prev.indexOf(id);
@@ -332,12 +380,17 @@ export default function ResumeBuilder() {
 
   return (
     <div className="mx-auto w-full max-w-6xl">
-      <StepProgressHeader
-        title="Resume Builder"
-        stepLabel={`Step ${currentIndex + 1} of ${steps.length}`}
-        stepText={steps[currentIndex]?.label ?? ""}
-        progress={(currentIndex + 1) / steps.length}
-      />
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
+        <StepProgressHeader
+          title="Resume Builder"
+          stepLabel={`Step ${currentIndex + 1} of ${steps.length}`}
+          stepText={steps[currentIndex]?.label ?? ""}
+          progress={(currentIndex + 1) / steps.length}
+        />
+        <div className="shrink-0 mb-4 sm:mb-0 bg-card rounded-md px-3 py-2 border w-fit">
+          <SaveIndicator isSaving={isSaving} lastSavedAt={lastSavedAt} />
+        </div>
+      </div>
 
       {/* Optional quick jump chips (hidden on mobile to match reference UI) */}
       <div className="mt-4 hidden flex-wrap gap-2 sm:flex">

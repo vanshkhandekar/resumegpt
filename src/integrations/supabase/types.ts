@@ -95,6 +95,105 @@ export type Database = {
         }
         Relationships: []
       }
+      profiles: {
+        Row: {
+          id: string
+          full_name: string | null
+          avatar_url: string | null
+          plan: 'free' | 'pro' | 'enterprise'
+          ai_calls_used: number
+          resumes_created: number
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id: string
+          full_name?: string | null
+          avatar_url?: string | null
+          plan?: 'free' | 'pro' | 'enterprise'
+          ai_calls_used?: number
+          resumes_created?: number
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          full_name?: string | null
+          avatar_url?: string | null
+          plan?: 'free' | 'pro' | 'enterprise'
+          ai_calls_used?: number
+          resumes_created?: number
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      resumes: {
+        Row: {
+          id: string
+          user_id: string
+          title: string
+          data: any
+          template_id: string
+          section_order: string[]
+          section_enabled: Record<string, boolean>
+          last_score: number | null
+          is_archived: boolean
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          title?: string
+          data?: any
+          template_id?: string
+          section_order?: string[]
+          section_enabled?: Record<string, boolean>
+          last_score?: number | null
+          is_archived?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          title?: string
+          data?: any
+          template_id?: string
+          section_order?: string[]
+          section_enabled?: Record<string, boolean>
+          last_score?: number | null
+          is_archived?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      usage_logs: {
+        Row: {
+          id: string
+          user_id: string
+          action: string
+          metadata: any | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          action: string
+          metadata?: any | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          action?: string
+          metadata?: any | null
+          created_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
