@@ -17,8 +17,8 @@ export function DashboardLayout() {
             <SidebarTrigger className="ml-1" />
             <Separator orientation="vertical" className="h-6" />
             <Link to="/" className="flex items-center gap-2 hover:opacity-80">
-              <span className="text-2xl">📄</span>
-              <span className="text-lg font-bold text-foreground">Resume GPT</span>
+              <img src="/logo.png" alt="Resume GPT" className="h-8 w-auto" />
+              <span className="text-lg font-bold text-foreground hidden sm:inline-block">Resume GPT</span>
             </Link>
             <span className="hidden text-sm text-muted-foreground sm:inline">- AI Resume Builder</span>
             <div className="ml-auto flex items-center gap-2">

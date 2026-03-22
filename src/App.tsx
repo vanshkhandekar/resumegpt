@@ -40,6 +40,7 @@ const App = () => (
               <Route path="/create/:id" element={<ResumeBuilder />} />
               <Route path="/templates" element={<Templates />} />
               <Route path="/score/:id" element={<ResumeScore />} />
+              <Route path="/export" element={<ExportResume />} />
               <Route path="/export/:id" element={<ExportResume />} />
               <Route path="/prompt" element={<PromptPage />} />
             </Route>

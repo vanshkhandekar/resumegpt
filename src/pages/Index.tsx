@@ -21,9 +21,9 @@ export default function Index() {
         <div className="mx-auto flex h-16 w-full max-w-6xl items-center justify-between px-4">
           <a href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
             <img
-              src="/logo.svg"
+              src="/logo.png"
               alt="ResumeGPT Logo"
-              className="h-10 w-10 object-contain"
+              className="h-12 w-12 object-contain"
             />
             <div className="hidden sm:block">
               <p className="text-xl font-bold text-foreground">ResumeGPT</p>

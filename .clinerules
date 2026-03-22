@@ -1,0 +1,27 @@
+# Roo Code & Cline Project Rules
+
+This file configures the behavior of AI coding assistants (like Roo Code, Cline, or Antigravity) for this specific project.
+
+## 🧠 Model Configuration
+- **Primary Model:** `anthropic/claude-3-opus` (Opus 4.6) via OpenRouter.
+- **API Provider:** OpenRouter.
+- **Provider Settings:** Ensure OpenRouter is selected in your extension settings.
+
+## 🔑 API Key (For Reference)
+Use the API key provided during the setup:
+`sk-or-v1-f6190fe772bd0da190...` (Complete key in `FloatingAiAssistant.tsx` and `ResumeBuilder.tsx`)
+
+## 🏗️ Project Architecture Rules
+1. **No AI Tool Mentions:** Never mention "Lovable", "GPT", or "Antigravity" in the user-facing UI. Use professional names like "AI Resume Studio".
+2. **SaaS Standards:** Every UI change must feel premium. Use Tailwind CSS for custom styling, dark-mode support, and glassmorphism.
+3. **Local-First:** Maintain the `localStorage` approach for resume data to ensure no login is required.
+4. **Professional Resume Output:** Resumes must be high-resolution, print-ready A4, and ATS-optimized.
+5. **UI/UX Excellence:** Prioritize micro-animations, clear visibility of photos, and vibrant template colors.
+
+## 🚀 Development Workflow
+- **Framework:** Vite + React + TypeScript + Tailwind CSS.
+- **Main Command:** `npm run dev` for local development.
+- **Build Command:** `npm run build` for production.
+
+---
+*These rules ensure consistency and high-quality coding following the Senior Product Architect persona (Opus 4.6).*

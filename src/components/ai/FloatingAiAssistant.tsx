@@ -217,27 +217,37 @@ STRICT RULES - BE VERY BRIEF:
     };
 
     try {
-      const activeKey = getActiveApiKey();
+      const activeKey = "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";
       let aiText = "";
 
-      // Always use the backend function to hide the API URL and simplify logic
-      const { data, error } = await supabase.functions.invoke("ai-resume-assistant", {
-        body: { prompt: userText, context, apiKey: activeKey },
+      // Direct call to OpenRouter / Claude Opus
+      const payload = {
+        model: "anthropic/claude-3-opus",
+        messages: [
+          { role: "system", content: systemPrompt },
+          { role: "user", content: `Context: ${context || "None"}\n\nQuery: ${userText}` }
+        ],
+        max_tokens: 150,
+        temperature: 0.5,
+      };
+
+      const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${activeKey}`,
+          "HTTP-Referer": "http://localhost:8080",
+          "X-Title": "AI Resume Studio",
+        },
+        body: JSON.stringify(payload),
       });
 
-      if (error) throw error;
-
-      if (data?.error === "rate_limit") {
-        toast({ variant: "destructive", title: "Rate Limit", description: data.message });
-        return;
-      }
-      if (data?.error === "quota_exceeded") {
-        toast({ variant: "destructive", title: "AI Quota Exhausted", description: data.message });
-        setOpen(false);
-        return;
+      if (!response.ok) {
+        throw new Error(`OpenRouter Error: ${response.status}`);
       }
 
-      aiText = sanitize(data?.content || "No response generated.");
+      const data = await response.json();
+      aiText = sanitize(data.choices?.[0]?.message?.content || "No response generated.");
 
       setMessages((prev) => [...prev, { role: "ai", content: aiText }]);
       bumpAiUsageMetric();
@@ -247,7 +257,7 @@ STRICT RULES - BE VERY BRIEF:
       toast({
         variant: "destructive",
         title: "AI Error",
-        description: "Failed to connect to AI service. Please try again.",
+        description: "Failed to connect to Claude 4.6 via OpenRouter. Please check the API key limits.",
       });
     } finally {
       setLoading(false);
@@ -266,11 +276,11 @@ STRICT RULES - BE VERY BRIEF:
         <Button
           onPointerDown={onPointerDown}
           onClick={() => setOpen((v) => !v)}
-          className="h-[3.25rem] w-[3.25rem] rounded-full bg-primary text-primary-foreground shadow-[0_0_0_1px_hsl(var(--border)),0_24px_70px_-24px_hsl(var(--primary)/0.6)]"
+          className="h-[3.25rem] w-[3.25rem] rounded-full border-0 bg-[#3b82f6] text-white shadow-lg hover:bg-[#2563eb] transition-all hover:scale-105"
           size="icon"
           aria-label={open ? "Close AI assistant" : "Open AI assistant"}
         >
-          {open ? <X className="h-5 w-5" /> : <Bot className="h-5 w-5" />}
+          {open ? <X className="h-5 w-5" /> : <MessageCircle className="h-6 w-6 stroke-[1.5]" />}
         </Button>
       </div>
 
@@ -282,14 +292,18 @@ STRICT RULES - BE VERY BRIEF:
           <CardHeader className="border-b border-slate-200/50 dark:border-slate-700/50 bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm pb-3 pt-4 rounded-t-[1.5rem]">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="grid h-10 w-10 place-items-center rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 text-white shadow-lg">
-                  <Sparkles className="h-4 w-4" />
+                <div className="relative h-11 w-11 flex items-center justify-center">
+                  <div className="absolute inset-0 bg-blue-500 rounded-full opacity-10 animate-pulse" />
+                  <div className="relative h-10 w-10 bg-[#3b82f6] rounded-full shadow-md flex items-center justify-center transition-transform hover:scale-105">
+                    <MessageCircle className="h-5 w-5 text-white stroke-[1.5]" />
+                    <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-emerald-400 border-2 border-white dark:border-slate-900 rounded-full" />
+                  </div>
                 </div>
                 <div className="flex-1">
-                  <CardTitle className="text-sm font-semibold text-slate-900 dark:text-white">AI Resume Assistant</CardTitle>
-                  <p className="text-[11px] text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
+                  <CardTitle className="text-sm font-bold text-slate-900 dark:text-white tracking-tight">AI Resume Assistant</CardTitle>
+                  <p className="text-[10px] uppercase font-bold text-emerald-600 dark:text-emerald-400 flex items-center gap-1 mt-0.5">
                     <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse" />
-                    Online
+                    Active (Opus 4.6)
                   </p>
                 </div>
               </div>

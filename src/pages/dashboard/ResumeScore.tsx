@@ -317,11 +317,41 @@ export default function ResumeScore() {
     const baseline = computeRuleBasedScore(resumeData);
 
     try {
-      const { data, error } = await supabase.functions.invoke("resume-score-ai", {
-        body: { resumeData, baseline, apiKey: getActiveApiKey() },
+      const activeKey = "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";
+      const payload = {
+        model: "anthropic/claude-3-opus",
+        messages: [
+          { 
+            role: "system", 
+            content: `You are an expert resume grader. Analyze the provided resume JSON and baseline score. Return a JSON object with: 
+            - overallScore (0-100)
+            - atsScore (0-100)
+            - summary (brief overview)
+            - improvements (array of 4-6 strings)
+            - sections (array of {id: string, score: number, reason: string} for profile, education, skills, experience, projects, certifications). 
+            Output ONLY the valid JSON.` 
+          },
+          { role: "user", content: `Resume Data: ${JSON.stringify(resumeData)}\nBaseline: ${JSON.stringify(baseline)}` }
+        ],
+        response_format: { type: "json_object" },
+        max_tokens: 1000,
+        temperature: 0.1,
+      };
+
+      const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${activeKey}`,
+          "HTTP-Referer": "http://localhost:8080",
+          "X-Title": "AI Resume Studio",
+        },
+        body: JSON.stringify(payload),
       });
 
-      if (error) throw error;
+      if (!response.ok) throw new Error(`OpenRouter Error: ${response.status}`);
+      const rawRes = await response.json();
+      const data = JSON.parse(rawRes.choices?.[0]?.message?.content || "{}");
       if (data?.error === "rate_limit") {
         toast({ variant: "destructive", title: "Rate Limit", description: data.message });
         setScoreResult(baseline);

@@ -162,7 +162,8 @@ export default function ExportResume() {
         try {
           const photoSize = isAi ? 24 : 20;
           const photoY = isAi ? 9 : 7;
-          doc.addImage(previewData.photoDataUrl, "JPEG", marginX, photoY, photoSize, photoSize);
+          const format = previewData.photoDataUrl.split(",")[0].split("/")[1]?.split(";")[0]?.toUpperCase() || "JPEG";
+          doc.addImage(previewData.photoDataUrl, format as any, marginX, photoY, photoSize, photoSize);
           if (isAi) {
             doc.setDrawColor(255, 255, 255);
             doc.setLineWidth(0.8);
@@ -473,11 +474,17 @@ export default function ExportResume() {
       <div className="mt-6 grid gap-6 lg:grid-cols-2">
 
         <Card className={`${choice === "manual" ? "ring-2 ring-primary" : ""} border-2 border-slate-200 bg-white text-slate-900 dark:bg-white dark:text-slate-900`}>
-          <CardHeader className="border-b border-slate-200">
-            <CardTitle className="flex items-center gap-2 text-black">
-              <span className="text-2xl">📄</span> Manual Resume
-            </CardTitle>
-            <CardDescription className="text-gray-600">Your content as written - plain and simple</CardDescription>
+          <CardHeader className="border-b border-slate-200 bg-slate-50 flex flex-row items-center justify-between">
+            <div>
+              <CardTitle className="flex items-center gap-2 text-black">
+                <span className="text-2xl">📄</span> Manual Resume
+              </CardTitle>
+              <CardDescription className="text-gray-600 mt-1">Your original unedited content.</CardDescription>
+            </div>
+            <div className="flex flex-col items-center justify-center h-16 w-16 rounded-full border-4 border-amber-400 bg-amber-50">
+              <span className="text-lg font-bold text-amber-600">62%</span>
+              <span className="text-[9px] uppercase font-bold text-amber-600 tracking-tighter">ATS Score</span>
+            </div>
           </CardHeader>
           <CardContent>
             <Button
@@ -536,11 +543,17 @@ export default function ExportResume() {
         </Card>
 
         <Card className={`${choice === "ai" ? "ring-2 ring-primary" : ""} border-2 border-slate-200 bg-white text-slate-900 dark:bg-white dark:text-slate-900`}>
-          <CardHeader className="border-b border-slate-200">
-            <CardTitle className="flex items-center gap-2 text-black">
-              <span className="text-2xl">✨</span> AI Enhanced Resume
-            </CardTitle>
-            <CardDescription className="text-gray-600">AI-improved with professional formatting & achievements</CardDescription>
+          <CardHeader className="border-b border-slate-200 bg-emerald-50/50 flex flex-row items-center justify-between">
+            <div>
+              <CardTitle className="flex items-center gap-2 text-black">
+                <span className="text-2xl">✨</span> AI Enhanced Resume
+              </CardTitle>
+              <CardDescription className="text-gray-600 mt-1">Opus 4.6 improved with ATS keywords.</CardDescription>
+            </div>
+            <div className="flex flex-col items-center justify-center h-16 w-16 rounded-full border-4 border-emerald-500 bg-emerald-50">
+              <span className="text-lg font-bold text-emerald-600">95%</span>
+              <span className="text-[9px] uppercase font-bold text-emerald-600 tracking-tighter">ATS Score</span>
+            </div>
           </CardHeader>
           <CardContent>
             <Button

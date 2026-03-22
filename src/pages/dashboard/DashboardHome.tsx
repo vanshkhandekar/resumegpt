@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Copy, Edit, FileText, MoreVertical, Plus, Trash2, Download } from "lucide-react";
+import { Copy, Edit, FileText, MoreVertical, Plus, Trash2, Download, Sparkles, Trophy } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -13,11 +13,14 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useResumes } from "@/hooks/useResumes";
-import { useAuth } from "@/hooks/useAuth";
+import { getMetricsSnapshot } from "@/lib/demoStorage";
 
 export default function DashboardHome() {
   const { resumes, loading, fetchResumes, createResume, deleteResume, duplicateResume } = useResumes();
   const navigate = useNavigate();
+  const [refresh, setRefresh] = useState(0);
+
+  const metrics = useMemo(() => getMetricsSnapshot(), [refresh, resumes.length]);
 
   useEffect(() => {
     fetchResumes();
@@ -36,47 +39,45 @@ export default function DashboardHome() {
       <section>
         <div className="mb-6 flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight">
+            <h1 className="text-3xl font-bold tracking-tight bg-gradient-to-r from-primary to-primary/50 bg-clip-text text-transparent">
               Welcome back!
             </h1>
-            <p className="text-muted-foreground">Here is an overview of your resumes and usage.</p>
+            <p className="text-muted-foreground">Here is an overview of your professional resumes.</p>
           </div>
-          <Button onClick={handleCreateNew} className="hidden sm:flex">
+          <Button onClick={handleCreateNew} className="hidden sm:flex bg-gradient-to-br from-blue-600 to-indigo-700 shadow-md transition-all hover:shadow-lg hover:scale-[1.02]">
             <Plus className="mr-2 h-4 w-4" /> Create Resume
           </Button>
         </div>
 
         <div className="grid gap-4 md:grid-cols-3">
-          <Card>
+          <Card className="border-l-4 border-l-blue-500 shadow-sm hover:shadow-md transition-all">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Resumes</CardTitle>
-              <FileText className="h-4 w-4 text-muted-foreground" />
+              <CardTitle className="text-sm font-semibold text-slate-700 dark:text-slate-300">Total Resumes</CardTitle>
+              <FileText className="h-4 w-4 text-blue-500" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{resumes.length}</div>
-              <p className="text-xs text-muted-foreground">Resumes created in your account</p>
+              <p className="text-xs text-muted-foreground mt-1 font-medium italic">Active in local storage</p>
             </CardContent>
           </Card>
-          <Card>
+          <Card className="border-l-4 border-l-emerald-500 shadow-sm hover:shadow-md transition-all">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">AI Calls Used</CardTitle>
-              <FileText className="h-4 w-4 text-muted-foreground" />
+              <CardTitle className="text-sm font-semibold text-slate-700 dark:text-slate-300">AI Assistant Used</CardTitle>
+              <Sparkles className="h-4 w-4 text-emerald-500" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">0 / 10</div>
-              <p className="text-xs text-muted-foreground">Daily limit (Free Plan)</p>
+              <div className="text-2xl font-bold">{metrics.aiUsage} calls</div>
+              <p className="text-xs text-muted-foreground mt-1 font-medium italic">Powered by Opus 4.6</p>
             </CardContent>
           </Card>
-          <Card>
+          <Card className="border-l-4 border-l-amber-500 shadow-sm hover:shadow-md transition-all">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Current Plan</CardTitle>
-              <FileText className="h-4 w-4 text-muted-foreground" />
+              <CardTitle className="text-sm font-semibold text-slate-700 dark:text-slate-300">Current Access</CardTitle>
+              <Trophy className="h-4 w-4 text-amber-500" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold capitalize">Free</div>
-              <p className="text-xs text-muted-foreground">
-                <Link to="/upgrade" className="text-primary hover:underline">Upgrade to Pro</Link> for more limits.
-              </p>
+              <div className="text-2xl font-bold capitalize">Enterprise</div>
+              <p className="text-xs text-muted-foreground mt-1 font-medium italic">Unlimited Premium Features</p>
             </CardContent>
           </Card>
         </div>

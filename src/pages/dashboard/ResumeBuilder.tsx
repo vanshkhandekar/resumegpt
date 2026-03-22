@@ -358,11 +358,35 @@ export default function ResumeBuilder() {
   }) => {
     setAiBusy(key);
     try {
-      const { data, error } = await supabase.functions.invoke("ai-resume-assistant", {
-        body: { prompt, context: "Resume writing", apiKey: getActiveApiKey() },
+      const activeKey = "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";
+      const payload = {
+        model: "anthropic/claude-3-opus",
+        messages: [
+          { role: "system", content: "You are an expert ATS resume writer. Output ONLY the generated text securely as instructed, keeping it extremely professional, avoiding any filler phrases or chatty introductions." },
+          { role: "user", content: prompt }
+        ],
+        max_tokens: 250,
+        temperature: 0.5,
+      };
+
+      const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${activeKey}`,
+          "HTTP-Referer": "http://localhost:8080",
+          "X-Title": "AI Resume Studio",
+        },
+        body: JSON.stringify(payload),
       });
-      if (error) throw error;
-      const content = String(data?.content || "").trim();
+
+      if (!response.ok) {
+        throw new Error(`OpenRouter Error: ${response.status}`);
+      }
+
+      const data = await response.json();
+      let content = String(data.choices?.[0]?.message?.content || "").trim();
+      
       if (!content) {
         toast({ variant: "destructive", title: "No response", description: "AI did not return any content." });
         return;

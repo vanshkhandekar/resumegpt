@@ -196,7 +196,7 @@ export function LandingReportAccordion() {
               <div className="flex flex-wrap gap-2">
                 {[
                   "React", "TypeScript", "Vite", "Tailwind CSS",
-                  "Shadcn UI", "Supabase", "jsPDF", "Gemini AI"
+                  "Shadcn UI", "OpenRouter", "jsPDF", "Claude 3 Opus"
                 ].map((tool) => (
                   <Badge key={tool} className="px-3 py-1 text-sm bg-gradient-to-r from-primary to-secondary">{tool}</Badge>
                 ))}
