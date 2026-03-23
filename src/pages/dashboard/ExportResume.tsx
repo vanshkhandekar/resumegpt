@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import jsPDF from "jspdf";
-console.log("jsPDF import:", jsPDF);
 import { Separator } from "@/components/ui/separator";
 import { Link } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
@@ -87,11 +86,9 @@ export default function ExportResume() {
   };
 
   const generatePDF = () => {
-    console.log("Calling generatePDF. jsPDF is:", jsPDF);
     const JsConstructor = (jsPDF as any).jsPDF || jsPDF;
     if (typeof JsConstructor !== 'function') {
-      console.error("jsPDF is not a constructor!", jsPDF);
-      alert("System error: PDF library not loaded correctly.");
+      console.error("jsPDF library error");
       return;
     }
     const doc = new JsConstructor({ unit: "mm", format: "a4" });
@@ -286,7 +283,6 @@ export default function ExportResume() {
     };
 
     try {
-      console.log("Generating PDF with template:", choice);
       drawHeader();
 
       if (previewData.summary) {
@@ -460,10 +456,8 @@ export default function ExportResume() {
 
       const fileName = `${(previewData.name || "resume").replace(/\s+/g, "_")}_resume.pdf`;
       doc.save(fileName);
-      console.log("PDF download triggered successfully!");
     } catch (error: any) {
       console.error("PDF Generation failed:", error);
-      alert("Error: " + error.message);
     }
   };
 
