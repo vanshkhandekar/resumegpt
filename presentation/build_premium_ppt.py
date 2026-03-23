@@ -115,7 +115,7 @@ def add_glass_card(slide, left, top, width, height, border_color=CARD_BORDER):
 
 def add_text(slide, left, top, width, height, text, font_size=18,
              color=TEXT_WHITE, bold=False, alignment=PP_ALIGN.LEFT,
-             font_name='Segoe UI'):
+             font_name='Arial'):
     txBox = slide.shapes.add_textbox(left, top, width, height)
     tf = txBox.text_frame
     tf.word_wrap = True
@@ -164,11 +164,11 @@ def add_icon_text(slide, left, top, icon_char, label, desc,
     run.font.color.rgb = accent_color
     run.font.bold = True
     # Label
-    add_text(slide, left + Inches(0.15), top + Inches(1.4), card_w - Inches(0.3), Inches(0.5),
-             label, font_size=16, color=TEXT_WHITE, bold=True, alignment=PP_ALIGN.CENTER)
+    add_text(slide, left + Inches(0.15), top + Inches(1.3), card_w - Inches(0.3), Inches(0.4),
+             label, font_size=15, color=TEXT_WHITE, bold=True, alignment=PP_ALIGN.CENTER)
     # Desc
-    add_text(slide, left + Inches(0.15), top + Inches(1.85), card_w - Inches(0.3), Inches(0.8),
-             desc, font_size=11, color=TEXT_GREY, alignment=PP_ALIGN.CENTER)
+    add_text(slide, left + Inches(0.1), top + Inches(1.8), card_w - Inches(0.2), Inches(0.6),
+             desc, font_size=10, color=TEXT_GREY, alignment=PP_ALIGN.CENTER)
 
 def add_step_card(slide, left, top, number, title, desc, accent=NEON_BLUE):
     """Numbered step card for workflow."""
@@ -191,10 +191,10 @@ def add_step_card(slide, left, top, number, title, desc, accent=NEON_BLUE):
     run.font.color.rgb = RGBColor(255, 255, 255)
     run.font.bold = True
     # Title
-    add_text(slide, left + Inches(0.15), top + Inches(1.15), Inches(2.2), Inches(0.4),
+    add_text(slide, left + Inches(0.15), top + Inches(1.05), Inches(2.2), Inches(0.5),
              title, font_size=15, color=TEXT_WHITE, bold=True, alignment=PP_ALIGN.CENTER)
     # Desc
-    add_text(slide, left + Inches(0.1), top + Inches(1.55), Inches(2.3), Inches(0.9),
+    add_text(slide, left + Inches(0.1), top + Inches(1.6), Inches(2.3), Inches(1.0),
              desc, font_size=10, color=TEXT_GREY, alignment=PP_ALIGN.CENTER)
 
 def add_slide_number(slide, num, total):
@@ -227,23 +227,24 @@ add_neon_line(slide, Inches(1.0), Inches(1.8), Inches(4.0), NEON_BLUE, Pt(4))
 add_neon_line(slide, Inches(1.0), Inches(1.95), Inches(2.5), CYAN, Pt(2))
 
 # Title
-add_text(slide, Inches(1.0), Inches(2.2), Inches(8), Inches(1.2),
-         "Antigravity Resume Studio", font_size=52, color=TEXT_WHITE, bold=True)
+add_text(slide, Inches(1.0), Inches(1.8), Inches(7.0), Inches(1.8),
+         "AI Resume Studio", font_size=54, color=TEXT_WHITE, bold=True)
 
 # Subtitle
-add_text(slide, Inches(1.0), Inches(3.4), Inches(8), Inches(0.6),
-         "AI-Powered Resume Builder  •  Final Year Project", font_size=22, color=NEON_BLUE)
+add_text(slide, Inches(1.0), Inches(3.6), Inches(7.0), Inches(0.6),
+         "AI-Powered Resume Builder  •  Final Year Project", font_size=24, color=NEON_BLUE)
 
 # Info card
-info_card = add_glass_card(slide, Inches(1.0), Inches(4.4), Inches(5.5), Inches(2.2))
-add_text(slide, Inches(1.4), Inches(4.6), Inches(5), Inches(0.4),
-         "👤  Vansh Khandekar", font_size=20, color=TEXT_WHITE, bold=True)
-add_text(slide, Inches(1.4), Inches(5.1), Inches(5), Inches(0.4),
-         "🎓  Final Year  •  B.Tech / BCA / MCA", font_size=16, color=TEXT_GREY)
-add_text(slide, Inches(1.4), Inches(5.6), Inches(5), Inches(0.4),
-         "🏛️  [Your College Name]", font_size=16, color=TEXT_GREY)
-add_text(slide, Inches(1.4), Inches(6.1), Inches(5), Inches(0.4),
-         "📅  Academic Year 2025–26", font_size=14, color=TEXT_DIM)
+add_glass_card(slide, Inches(1.0), Inches(4.4), Inches(5.5), Inches(2.2))
+add_card_info = [
+    ("👤  Vansh Khandekar", 20, TEXT_WHITE, True),
+    ("🎓  Final Year  •  B.Tech / BCA / MCA", 16, TEXT_GREY, False),
+    ("🏛️  [Your College Name]", 16, TEXT_GREY, False),
+    ("📅  Academic Year 2025–26", 14, TEXT_DIM, False)
+]
+for i, (txt, sz, col, bld) in enumerate(add_card_info):
+    add_text(slide, Inches(1.4), Inches(4.55) + Inches(0.45) * i, Inches(5), Inches(0.4),
+             txt, font_size=sz, color=col, bold=bld)
 
 # Decorative mock on right side
 landing_path = os.path.join(ASSETS_DIR, 'landing_mockup.png')
@@ -352,7 +353,7 @@ for i, (icon, title, desc, color) in enumerate(features):
     x = Inches(0.5) + Inches(4.2) * col
     y = Inches(2.2) + Inches(2.7) * row
     add_icon_text(slide, x, y, icon, title, desc, accent_color=color,
-                  card_w=Inches(3.8), card_h=Inches(2.4))
+                  card_w=Inches(3.8), card_h=Inches(2.5))
 
 add_slide_number(slide, 4, TOTAL_SLIDES)
 
@@ -478,11 +479,11 @@ section_heading(slide, "Product Interface", "Resume Builder & AI Score Dashboard
 db = os.path.join(ASSETS_DIR, 'dashboard_mockup.png')
 pv = os.path.join(ASSETS_DIR, 'preview_mockup.png')
 if os.path.exists(db):
-    add_glass_card(slide, Inches(0.4), Inches(2.0), Inches(6.2), Inches(5.2), NEON_BLUE)
-    slide.shapes.add_picture(db, Inches(0.6), Inches(2.2), width=Inches(5.8), height=Inches(4.8))
+    add_glass_card(slide, Inches(0.4), Inches(1.8), Inches(6.2), Inches(5.0), NEON_BLUE)
+    slide.shapes.add_picture(db, Inches(0.6), Inches(2.0), width=Inches(5.8), height=Inches(4.6))
 if os.path.exists(pv):
-    add_glass_card(slide, Inches(6.9), Inches(2.0), Inches(6.2), Inches(5.2), GREEN)
-    slide.shapes.add_picture(pv, Inches(7.1), Inches(2.2), width=Inches(5.8), height=Inches(4.8))
+    add_glass_card(slide, Inches(6.9), Inches(1.8), Inches(6.2), Inches(5.0), GREEN)
+    slide.shapes.add_picture(pv, Inches(7.1), Inches(2.0), width=Inches(5.8), height=Inches(4.6))
 
 # Labels
 add_text(slide, Inches(0.4), Inches(7.0), Inches(6.2), Inches(0.4),
@@ -505,7 +506,7 @@ section_heading(slide, "Advantages & USP", "Why this stands out from alternative
 # Left - Our system
 our_card = add_glass_card(slide, Inches(0.5), Inches(2.2), Inches(6.0), Inches(5.0), GREEN)
 add_text(slide, Inches(0.8), Inches(2.4), Inches(5.4), Inches(0.5),
-         "✅  Antigravity Resume Studio", font_size=22, color=GREEN, bold=True)
+         "✅  AI Resume Studio", font_size=22, color=GREEN, bold=True)
 add_neon_line(slide, Inches(0.8), Inches(2.95), Inches(5.4), GREEN, Pt(2))
 
 our_advantages = [
@@ -537,7 +538,7 @@ trad_disadvantages = [
     "Watermarks on free-tier PDF exports",
 ]
 for i, dis in enumerate(trad_disadvantages):
-    add_text(slide, Inches(7.4), Inches(3.2) + Inches(0.42) * i, Inches(5.2), Inches(0.4),
+    add_text(slide, Inches(7.4), Inches(3.2) + Inches(0.44) * i, Inches(5.2), Inches(0.4),
              f"▸  {dis}", font_size=14, color=TEXT_GREY)
 
 add_slide_number(slide, 9, TOTAL_SLIDES)
@@ -556,7 +557,7 @@ sum_card = add_glass_card(slide, Inches(0.5), Inches(2.0), Inches(12.3), Inches(
 add_text(slide, Inches(0.9), Inches(2.15), Inches(11.5), Inches(0.4),
          "📌  Project Summary", font_size=22, color=GREEN, bold=True)
 add_text(slide, Inches(0.9), Inches(2.6), Inches(11.5), Inches(0.8),
-         "Antigravity Resume Studio successfully demonstrates a scalable, AI-first approach to resume building. "
+         "AI Resume Studio successfully demonstrates a scalable, AI-first approach to resume building. "
          "By combining Google Gemini's NLP capabilities with a modern React frontend and Supabase backend, "
          "the platform delivers a seamless experience that rivals paid SaaS products — completely free.",
          font_size=14, color=TEXT_WHITE)
@@ -575,7 +576,7 @@ futures = [
 for i, (icon, title, desc, color) in enumerate(futures):
     x = Inches(0.4) + Inches(3.2) * i
     add_icon_text(slide, x, Inches(4.6), icon, title, desc,
-                  accent_color=color, card_w=Inches(2.9), card_h=Inches(2.3))
+                  accent_color=color, card_w=Inches(2.9), card_h=Inches(2.6))
 
 add_slide_number(slide, 10, TOTAL_SLIDES)
 
@@ -641,7 +642,7 @@ for i, slide_obj in enumerate(prs.slides):
 # ═══════════════════════════════════════════════════════════════════════════
 # SAVE
 # ═══════════════════════════════════════════════════════════════════════════
-output_path = os.path.join(SCRIPT_DIR, 'Antigravity_Resume_Studio.pptx')
+output_path = os.path.join(SCRIPT_DIR, 'AI_Resume_Studio_Premium.pptx')
 prs.save(output_path)
 print(f"✅ Premium presentation saved: {output_path}")
 print(f"   Total slides: {len(prs.slides)}")

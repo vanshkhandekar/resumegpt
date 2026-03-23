@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { jsPDF } from "jspdf";
+import jsPDF from "jspdf";
+console.log("jsPDF import:", jsPDF);
 import { Separator } from "@/components/ui/separator";
 import { Link } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
@@ -86,7 +87,14 @@ export default function ExportResume() {
   };
 
   const generatePDF = () => {
-    const doc = new jsPDF({ unit: "mm", format: "a4" });
+    console.log("Calling generatePDF. jsPDF is:", jsPDF);
+    const JsConstructor = (jsPDF as any).jsPDF || jsPDF;
+    if (typeof JsConstructor !== 'function') {
+      console.error("jsPDF is not a constructor!", jsPDF);
+      alert("System error: PDF library not loaded correctly.");
+      return;
+    }
+    const doc = new JsConstructor({ unit: "mm", format: "a4" });
     const isAi = choice === "ai";
     const hexToRgb = (hex: string): [number, number, number] => {
       const clean = hex.replace("#", "");
@@ -192,8 +200,8 @@ export default function ExportResume() {
       });
 
       doc.setFontSize(10.5);
-      const contactLine = `${previewData.email ? `📧 ${previewData.email}` : ""}${previewData.email && previewData.phone ? "  |  " : ""}${previewData.phone ? `📱 ${previewData.phone}` : ""}`;
-      doc.text(contactLine || "📧 email@example.com  |  📱 +91 00000 00000", textX, isAi ? 29 : 26, {
+      const contactLine = `${previewData.email ? `Email: ${previewData.email}` : ""}${previewData.email && previewData.phone ? "  |  " : ""}${previewData.phone ? `Phone: ${previewData.phone}` : ""}`;
+      doc.text(contactLine || "Email: email@example.com  |  Phone: +91 00000 00000", textX, isAi ? 29 : 26, {
         maxWidth: pageWidth - textX - marginX,
       });
 
@@ -237,7 +245,7 @@ export default function ExportResume() {
         wrapped.forEach((line: string, idx: number) => {
           ensureSpace(6);
           if (idx === 0) {
-            doc.text(`• ${line}`, marginX, yPos);
+            doc.text(`- ${line}`, marginX, yPos);
           } else {
             doc.text(line, marginX + 4, yPos);
           }
@@ -249,7 +257,7 @@ export default function ExportResume() {
     const drawSkills = (skillsList: string[]) => {
       if (!skillsList.length) return;
       if (!isAi) {
-        drawParagraph(skillsList.join(" • "));
+        drawParagraph(skillsList.join(" | "));
         return;
       }
 
@@ -277,178 +285,186 @@ export default function ExportResume() {
       yPos += rowHeight - 2;
     };
 
-    drawHeader();
+    try {
+      console.log("Generating PDF with template:", choice);
+      drawHeader();
 
-    if (previewData.summary) {
-      drawSectionTitle("Professional Summary");
-      drawParagraph(previewData.summary);
-      yPos += 2;
-    }
-
-    const sectionEnabled = resumeData?.sectionEnabled || {
-      education: true,
-      projects: true,
-      skills: true,
-      languages: true,
-      achievements: true,
-      experience: true,
-      certs: true,
-    };
-
-    const orderedSections = (resumeData?.order?.length
-      ? resumeData.order
-      : ["education", "projects", "skills", "languages", "achievements", "experience", "certs"]
-    ).filter((id) => ["education", "projects", "skills", "languages", "achievements", "experience", "certs"].includes(id));
-
-    orderedSections.forEach((section) => {
-      if (!sectionEnabled[section]) return;
-
-      if (section === "skills") {
-        const skillsList = previewData.skills
-          .split(/[\n,]/)
-          .map((s) => s.trim())
-          .filter(Boolean);
-        if (!skillsList.length) return;
-        drawSectionTitle("Technical Skills");
-        drawSkills(skillsList);
+      if (previewData.summary) {
+        drawSectionTitle("Professional Summary");
+        drawParagraph(previewData.summary);
         yPos += 2;
-        return;
       }
 
-      if (section === "languages") {
-        const list = (previewData.languages || "")
-          .split(/[\n,]/)
-          .map((x) => x.trim())
-          .filter(Boolean);
-        if (!list.length) return;
-        drawSectionTitle("Languages");
-        drawParagraph(list.join(" • "));
-        yPos += 1;
-        return;
-      }
+      const sectionEnabled = (resumeData as any)?.sectionEnabled || {
+        education: true,
+        projects: true,
+        skills: true,
+        languages: true,
+        achievements: true,
+        experience: true,
+        certs: true,
+      };
 
-      if (section === "achievements") {
-        const list = (previewData.achievements || "")
-          .split("\n")
-          .map((x) => x.trim())
-          .filter(Boolean);
-        if (!list.length) return;
-        drawSectionTitle("Achievements");
-        drawBullets(list);
-        yPos += 1;
-        return;
-      }
+      const orderedSections = ((resumeData as any)?.order?.length
+        ? (resumeData as any).order
+        : ["education", "projects", "skills", "languages", "achievements", "experience", "certs"]
+      ).filter((id: string) => ["education", "projects", "skills", "languages", "achievements", "experience", "certs"].includes(id));
 
-      if (section === "education") {
-        const list = previewData.education.filter((e) => e.school || e.degree || e.year);
-        if (!list.length) return;
-        drawSectionTitle("Education");
-        list.forEach((edu) => {
-          ensureSpace(12);
-          doc.setFont("helvetica", "bold");
-          doc.setFontSize(11);
-          doc.setTextColor(15, 23, 42);
-          doc.text(edu.school || "Institution Name", marginX, yPos);
-          yPos += 4.8;
-          doc.setFont("helvetica", "normal");
-          doc.setFontSize(10.4);
-          doc.setTextColor(71, 85, 105);
-          doc.text([edu.degree, edu.year].filter(Boolean).join(" | "), marginX, yPos);
-          yPos += 5.8;
-        });
-        yPos += 1;
-        return;
-      }
+      orderedSections.forEach((section: string) => {
+        if (!sectionEnabled[section]) return;
 
-      if (section === "projects") {
-        const list = previewData.projects.filter((p) => p.name || p.bullets);
-        if (!list.length) return;
-        drawSectionTitle("Projects");
-        list.forEach((project) => {
-          ensureSpace(10);
-          doc.setFont("helvetica", "bold");
-          doc.setFontSize(11);
-          doc.setTextColor(15, 23, 42);
-          doc.text(project.name || "Project", marginX, yPos);
-          yPos += 5;
-          const bullets = project.bullets
-            .split("\n")
-            .map((b) => b.trim())
+        if (section === "skills") {
+          const skillsList = previewData.skills
+            .split(/[\n,]/)
+            .map((s) => s.trim())
             .filter(Boolean);
-          drawBullets(bullets);
-          yPos += 1.5;
-        });
-        return;
-      }
+          if (!skillsList.length) return;
+          drawSectionTitle("Technical Skills");
+          drawSkills(skillsList);
+          yPos += 2;
+          return;
+        }
 
-      if (section === "experience") {
-        const list = previewData.experience.filter((e) => e.company || e.role || e.bullets);
-        if (!list.length) return;
-        drawSectionTitle("Experience");
-        list.forEach((exp) => {
-          ensureSpace(10);
-          doc.setFont("helvetica", "bold");
-          doc.setFontSize(11);
-          doc.setTextColor(15, 23, 42);
-          doc.text([exp.role, exp.company].filter(Boolean).join(" | ") || "Role | Company", marginX, yPos);
-          yPos += 5;
-          const bullets = exp.bullets
-            .split("\n")
-            .map((b) => b.trim())
+        if (section === "languages") {
+          const list = (previewData.languages || "")
+            .split(/[\n,]/)
+            .map((x) => x.trim())
             .filter(Boolean);
-          drawBullets(bullets);
-          yPos += 1.5;
-        });
-        return;
-      }
+          if (!list.length) return;
+          drawSectionTitle("Languages");
+          drawParagraph(list.join(" | "));
+          yPos += 1;
+          return;
+        }
 
-      if (section === "certs") {
-        const list = previewData.certs.filter((c) => c.name || c.org || c.year);
-        if (!list.length) return;
-        drawSectionTitle("Certifications");
-        list.forEach((cert) => {
-          ensureSpace(9);
-          doc.setFont("helvetica", "bold");
-          doc.setFontSize(10.8);
-          doc.setTextColor(15, 23, 42);
-          doc.text(cert.name || "Certification", marginX, yPos);
-          yPos += 4.8;
-          doc.setFont("helvetica", "normal");
-          doc.setFontSize(10.3);
-          doc.setTextColor(71, 85, 105);
-          doc.text([cert.org, cert.year].filter(Boolean).join(" | "), marginX, yPos);
-          yPos += 5.8;
-        });
-      }
-    });
+        if (section === "achievements") {
+          const list = (previewData.achievements || "")
+            .split("\n")
+            .map((x) => x.trim())
+            .filter(Boolean);
+          if (!list.length) return;
+          drawSectionTitle("Achievements");
+          drawBullets(list);
+          yPos += 1;
+          return;
+        }
 
-    if (isAi) {
-      const bulletPool = [
-        ...previewData.experience.flatMap((e) => e.bullets.split("\n")),
-        ...previewData.projects.flatMap((p) => p.bullets.split("\n")),
-      ]
-        .map((line) => line.trim())
-        .filter(Boolean)
-        .slice(0, 3);
+        if (section === "education") {
+          const list = previewData.education.filter((e) => e.school || e.degree || e.year);
+          if (!list.length) return;
+          drawSectionTitle("Education");
+          list.forEach((edu) => {
+            ensureSpace(12);
+            doc.setFont("helvetica", "bold");
+            doc.setFontSize(11);
+            doc.setTextColor(15, 23, 42);
+            doc.text(edu.school || "Institution Name", marginX, yPos);
+            yPos += 4.8;
+            doc.setFont("helvetica", "normal");
+            doc.setFontSize(10.4);
+            doc.setTextColor(71, 85, 105);
+            doc.text([edu.degree, edu.year].filter(Boolean).join(" | "), marginX, yPos);
+            yPos += 5.8;
+          });
+          yPos += 1;
+          return;
+        }
 
-      if (bulletPool.length) {
-        drawSectionTitle("Key Achievements");
-        drawBullets(bulletPool);
-      }
-    }
+        if (section === "projects") {
+          const list = previewData.projects.filter((p) => p.name || p.bullets);
+          if (!list.length) return;
+          drawSectionTitle("Projects");
+          list.forEach((project) => {
+            ensureSpace(10);
+            doc.setFont("helvetica", "bold");
+            doc.setFontSize(11);
+            doc.setTextColor(15, 23, 42);
+            doc.text(project.name || "Project", marginX, yPos);
+            yPos += 5;
+            const bullets = project.bullets
+              .split("\n")
+              .map((b) => b.trim())
+              .filter(Boolean);
+            drawBullets(bullets);
+            yPos += 1.5;
+          });
+          return;
+        }
 
-    const totalPages = doc.getNumberOfPages();
-    for (let page = 1; page <= totalPages; page += 1) {
-      doc.setPage(page);
-      doc.setFont("helvetica", "normal");
-      doc.setFontSize(9);
-      doc.setTextColor(100, 116, 139);
-      doc.text(`${previewData.name || "Resume"}  •  Page ${page} of ${totalPages}`, pageWidth / 2, pageHeight - 7, {
-        align: "center",
+        if (section === "experience") {
+          const list = previewData.experience.filter((e) => e.company || e.role || e.bullets);
+          if (!list.length) return;
+          drawSectionTitle("Experience");
+          list.forEach((exp) => {
+            ensureSpace(10);
+            doc.setFont("helvetica", "bold");
+            doc.setFontSize(11);
+            doc.setTextColor(15, 23, 42);
+            doc.text([exp.role, exp.company].filter(Boolean).join(" | ") || "Role | Company", marginX, yPos);
+            yPos += 5;
+            const bullets = exp.bullets
+              .split("\n")
+              .map((b) => b.trim())
+              .filter(Boolean);
+            drawBullets(bullets);
+            yPos += 1.5;
+          });
+          return;
+        }
+
+        if (section === "certs") {
+          const list = previewData.certs.filter((c) => c.name || c.org || c.year);
+          if (!list.length) return;
+          drawSectionTitle("Certifications");
+          list.forEach((cert) => {
+            ensureSpace(9);
+            doc.setFont("helvetica", "bold");
+            doc.setFontSize(10.8);
+            doc.setTextColor(15, 23, 42);
+            doc.text(cert.name || "Certification", marginX, yPos);
+            yPos += 4.8;
+            doc.setFont("helvetica", "normal");
+            doc.setFontSize(10.3);
+            doc.setTextColor(71, 85, 105);
+            doc.text([cert.org, cert.year].filter(Boolean).join(" | "), marginX, yPos);
+            yPos += 5.8;
+          });
+        }
       });
-    }
 
-    doc.save(`${(previewData.name || "resume").replace(/\s+/g, "_")}_resume.pdf`);
+      if (isAi) {
+        const bulletPool = [
+          ...previewData.experience.flatMap((e) => e.bullets.split("\n")),
+          ...previewData.projects.flatMap((p) => p.bullets.split("\n")),
+        ]
+          .map((line) => line.trim())
+          .filter(Boolean)
+          .slice(0, 3);
+
+        if (bulletPool.length) {
+          drawSectionTitle("Key Achievements");
+          drawBullets(bulletPool);
+        }
+      }
+
+      const totalPages = (doc as any).internal.getNumberOfPages ? (doc as any).internal.getNumberOfPages() : doc.getNumberOfPages();
+      for (let page = 1; page <= totalPages; page += 1) {
+        doc.setPage(page);
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(9);
+        doc.setTextColor(100, 116, 139);
+        doc.text(`${previewData.name || "Resume"}  •  Page ${page} of ${totalPages}`, pageWidth / 2, pageHeight - 7, {
+          align: "center",
+        });
+      }
+
+      const fileName = `${(previewData.name || "resume").replace(/\s+/g, "_")}_resume.pdf`;
+      doc.save(fileName);
+      console.log("PDF download triggered successfully!");
+    } catch (error: any) {
+      console.error("PDF Generation failed:", error);
+      alert("Error: " + error.message);
+    }
   };
 
   if (!loaded) {
@@ -663,6 +679,7 @@ export default function ExportResume() {
         <CardContent className="flex flex-col gap-3 sm:flex-row">
           <Button
             onClick={generatePDF}
+            type="button"
             size="lg"
             className="bg-gradient-to-r from-primary to-secondary text-white hover:opacity-95"
           >
