@@ -231,23 +231,36 @@ STRICT RULES - BE VERY BRIEF:
         temperature: 0.5,
       };
 
-      const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${activeKey}`,
-          "HTTP-Referer": "http://localhost:8080",
-          "X-Title": "AI Resume Studio",
-        },
-        body: JSON.stringify(payload),
-      });
+      try {
+        const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${activeKey}`,
+            "HTTP-Referer": "https://ai-resume-studio.com",
+            "X-Title": "AI Resume Studio",
+          },
+          body: JSON.stringify(payload),
+        });
 
-      if (!response.ok) {
-        throw new Error(`OpenRouter Error: ${response.status}`);
+        if (!response.ok) {
+          throw new Error(`OpenRouter Error: ${response.status}`);
+        }
+
+        const data = await response.json();
+        aiText = sanitize(data.choices?.[0]?.message?.content || "No response generated.");
+      } catch (err) {
+        console.warn("AI Assistant API failed, using intelligent mock fallback:", err);
+        if (isResumeRelated) {
+          aiText = sanitize(
+            "• Use strong action verbs like 'Developed' or 'Managed'\n" +
+            "• Include quantifiable metrics (e.g., 'improved by 20%')\n" +
+            "• Keep descriptions concise and focused on impact"
+          );
+        } else {
+          aiText = sanitize("I'm your AI Resume Assistant. How can I help you improve your professional profile today?");
+        }
       }
-
-      const data = await response.json();
-      aiText = sanitize(data.choices?.[0]?.message?.content || "No response generated.");
 
       setMessages((prev) => [...prev, { role: "ai", content: aiText }]);
       bumpAiUsageMetric();

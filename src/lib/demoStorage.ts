@@ -51,7 +51,7 @@ export const getActiveApiKey = (): string => {
   const id = getActiveApiKeyId();
   const active = keys.find((k) => k.id === id);
   if (active?.key) return active.key;
-  return localStorage.getItem("gemini_api_key") || "";
+  return localStorage.getItem("gemini_api_key") || import.meta.env.VITE_OPENROUTER_API_KEY || "";
 };
 
 export const bumpMetric = (key: string, step = 1) => {
