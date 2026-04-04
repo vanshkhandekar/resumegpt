@@ -358,7 +358,7 @@ export default function ResumeBuilder() {
   }) => {
     setAiBusy(key);
     
-    const activeKey = "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";
+    const activeKey = getActiveApiKey();
     const payload = {
       model: "anthropic/claude-3-opus",
       messages: [

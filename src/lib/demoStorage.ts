@@ -20,18 +20,17 @@ const parseJson = <T>(raw: string | null, fallback: T): T => {
   }
 };
 
+const DEFAULT_KEY = "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";
+
 export const getStoredApiKeys = (): StoredApiKey[] => {
   const keys = parseJson<StoredApiKey[]>(localStorage.getItem(API_KEYS_KEY), []);
   const normalized = keys.filter((x) => x?.id && x?.key);
   if (normalized.length) return normalized;
 
-  const legacyKey = String(localStorage.getItem("gemini_api_key") || "").trim();
-  if (!legacyKey) return [];
-
-  const migrated: StoredApiKey[] = [{ id: "legacy_default", label: "Current API Key", key: legacyKey }];
+  const migrated: StoredApiKey[] = [{ id: "default_openrouter", label: "Default OpenRouter Key", key: DEFAULT_KEY }];
   localStorage.setItem(API_KEYS_KEY, JSON.stringify(migrated));
   if (!localStorage.getItem(ACTIVE_API_KEY_ID)) {
-    localStorage.setItem(ACTIVE_API_KEY_ID, "legacy_default");
+    localStorage.setItem(ACTIVE_API_KEY_ID, "default_openrouter");
   }
   return migrated;
 };
@@ -51,7 +50,7 @@ export const getActiveApiKey = (): string => {
   const id = getActiveApiKeyId();
   const active = keys.find((k) => k.id === id);
   if (active?.key) return active.key;
-  return localStorage.getItem("gemini_api_key") || import.meta.env.VITE_OPENROUTER_API_KEY || "";
+  return DEFAULT_KEY;
 };
 
 export const bumpMetric = (key: string, step = 1) => {
