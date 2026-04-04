@@ -362,7 +362,7 @@ export default function ResumeBuilder() {
     const payload = {
       model: "anthropic/claude-3-opus",
       messages: [
-        { role: "system", content: "You are an expert ATS resume writer. Output ONLY the generated text securely as instructed, keeping it extremely professional, avoiding any filler phrases or chatty introductions." },
+        { role: "system", content: "You are an expert ATS resume writer. CRITICAL: Strictly adhere ONLY to the facts provided in the prompt. DO NOT invent fake metrics, companies, or experiences. Focus on professional phrasing and ATS optimization while remaining 100% honest to the user's input. Output ONLY the generated text, no chat or filler." },
         { role: "user", content: prompt }
       ],
       max_tokens: 250,

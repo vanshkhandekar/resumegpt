@@ -37,7 +37,7 @@ export function AppSidebar() {
       <SidebarContent className="bg-background flex flex-col justify-between h-full">
         <SidebarGroup>
           <Link to="/" className="flex items-center gap-2 px-2 py-4">
-            <img src="/logo.png" alt="Logo" className="h-8 w-8 object-contain" />
+            <img src="/logo.png" alt="Logo" className="h-10 w-10 object-contain" />
             {!collapsed && <span className="font-bold text-foreground">ResumeGPT</span>}
           </Link>
           <SidebarGroupContent>
