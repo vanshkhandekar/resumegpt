@@ -169,6 +169,34 @@ def build_appendix(S):
     // 'context' contains: name, headline, skills, education count, etc.
     """
     story.append(ascii_diagram(code6, S))
+    story.append(spacer(12))
+
+    # Snippet 7: PDF Drawing Logic
+    story.append(Paragraph("<b>A.7 PDF Export Engine — Drawing Logic (jsPDF)</b>", S['SubSection']))
+    story.append(spacer(4))
+    
+    code7 = """
+    // File: src/pages/dashboard/ExportResume.tsx
+    // Drawing a gradient header and profile photo in jsPDF
+    
+    const drawGradientBar = (doc, x, y, width, height, colors) => {
+      const steps = 80;
+      const stepWidth = width / steps;
+      for (let i = 0; i < steps; i++) {
+        const ratio = i / steps;
+        const color = interpolateColor(colors[0], colors[1], ratio);
+        doc.setFillColor(color);
+        doc.rect(x + i * stepWidth, y, stepWidth, height, "F");
+      }
+    };
+    
+    if (resume.photo) {
+      doc.addImage(resume.photo, "JPEG", 160, 15, 30, 30, undefined, "FAST");
+      doc.setDrawColor(200);
+      doc.roundedRect(159, 14, 32, 32, 2, 2, "S");
+    }
+    """
+    story.append(ascii_diagram(code7, S))
     
     story.append(page_break())
     
@@ -208,6 +236,50 @@ def build_appendix(S):
     ]
     story.append(make_table(glossary, col_widths=[80, 370]))
     
+    story.append(spacer(30))
+
+    # APPENDIX C: User Manual
+    story.append(page_break())
+    story.append(Paragraph("APPENDIX C", S['ChapterTitle']))
+    story.append(Paragraph("USER MANUAL", S['ChapterTitle']))
+    story.append(spacer(16))
+    
+    story.append(Paragraph(
+        "This user manual provides step-by-step instructions for job seekers to maximize their "
+        "success using the AI Resume Studio platform.", S['Body']))
+    story.append(spacer(8))
+
+    manual_steps = [
+        ("<b>Step 1: Account Creation</b>", "Navigate to the landing page and click 'Get Started'. "
+         "Sign up using your email and a secure password. You will be redirected to the dashboard."),
+        ("<b>Step 2: Initialize Resume</b>", "Click 'Create New Resume' on the dashboard. Enter a "
+         "title that reflects the target job role (e.g., 'Senior Frontend Engineer')."),
+        ("<b>Step 3: Profile Information</b>", "Fill in your Name, Headline, and Contact details. "
+         "Upload a professional photo if the target role requires one."),
+        ("<b>Step 4: Using AI Summary</b>", "Enter your core skills and experience summary. Click "
+         "the 'AI Write' button. Review the generated text and click 'Apply' to save it."),
+        ("<b>Step 5: Education Entry</b>", "Add your degrees in reverse chronological order. Ensure "
+         "you include the CGPA/Percentage as it is a key ATS data point for entry-level roles."),
+        ("<b>Step 6: Skill Keyword Entry</b>", "List your technical and soft skills. Use the 'AI "
+         "Suggestions' feature to find missing keywords common in your industry."),
+        ("<b>Step 7: Experience Depth</b>", "For each job role, provide at least 3 bullet points. "
+         "Use the AI bullet point generator to ensure each line follows the 'Action-Metric' format."),
+        ("<b>Step 8: Layout Customization</b>", "Use the reorder handles (arrows) to move critical "
+         "sections like 'Skills' to the top if they are your strongest selling point."),
+        ("<b>Step 9: Template Selection</b>", "Navigate to the Templates tab. Preview all 20 "
+         "professional designs. Choose an 'ATS Pro' template for corporate roles or a 'Color' "
+         "template for creative startups."),
+        ("<b>Step 10: ATS Score Audit</b>", "Go to the 'Resume Score' page. Review the multi-dimensional "
+         "score. Address any 'Low' or 'Missing' flags identified by the engine."),
+        ("<b>Step 11: AI-Enhanced Review</b>", "Trigger the 'AI Score' for a more nuanced critique. "
+         "Follow the specific feedback provided by Claude 3 Opus to refine your wording."),
+        ("<b>Step 12: High-Fidelity Export</b>", "Click 'Export PDF'. Choose 'AI Enhanced' for a "
+         "visually stunning document with color coding, then save the file to your device."),
+    ]
+    for title, desc in manual_steps:
+        story.append(Paragraph(f"{title}: {desc}", S['BodyIndent']))
+        story.append(spacer(4))
+
     story.append(spacer(30))
     story.append(Paragraph("— END OF THESIS —", S['CenterBold']))
     story.append(spacer(20))

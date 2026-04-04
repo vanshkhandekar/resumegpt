@@ -60,6 +60,29 @@ def build_chapter1(S):
         "services are prohibitively expensive for most students. AI Resume Studio addresses this gap by "
         "providing an intelligent, accessible, and feature-rich platform that guides users through every "
         "aspect of resume creation and optimization.", S['Body']))
+    story.append(spacer(6))
+
+    story.append(Paragraph("<b>1.1.1 The Emerging AI Economy and Recruitment</b>", S['SubSection']))
+    story.append(Paragraph(
+        "The shift towards an AI-centric economy has redefined what constitutes a competitive job "
+        "application. Career portals now leverage predictive analytics to match candidate profiles "
+        "to high-velocity roles. This necessitates a 'Machine-First' design strategy where the "
+        "resume document is treated as structured data rather than a static visual artifact. "
+        "AI Resume Studio adopts this paradigm, emphasizing machine-readability without sacrificing "
+        "human-centric aesthetic appeal. This architectural choice is informed by the growing "
+        "demand for candidates who understand and can leverage AI-driven workflows.", S['Body']))
+    story.append(spacer(6))
+
+    story.append(Paragraph("<b>1.1.2 Academic Significance and Student Impact</b>", S['SubSection']))
+    story.append(Paragraph(
+        "For final-year Computer Science (BCA/MCA) students, the transition from academia to the "
+        "professional workforce is a critical juncture. The lack of standardized guidance often "
+        "results in 'Skill-Experience Mismatch' — where a student's technical capabilities are "
+        "excellent, but their resume fails to communicate this to automated screening tools. "
+        "By participating in the development of AI Resume Studio, this project contributes to "
+        "creating a domain-specific expert system that alleviates this transitional friction, "
+        "providing a technical solution to a socio-economic problem.", S['Body']))
+    story.append(spacer(6))
     
     # 1.2 Problem Statement
     story.append(Paragraph("1.2 Problem Statement", S['SectionTitle']))
@@ -204,6 +227,40 @@ def build_chapter1(S):
         "(60% rule-based + 40% AI-based) provides more accurate and nuanced feedback than either approach "
         "alone.", S['Body']))
     
+    # 1.5.1 Methodology Overview
+    story.append(Paragraph("1.5.1 Research and Development Methodology", S['SectionTitle']))
+    story.append(Paragraph(
+        "The development of AI Resume Studio followed a modified Agile methodology, incorporating "
+        "User-Centered Design (UCD) principles to ensure the platform meets the actual needs of "
+        "job seekers. The process was divided into four primary phases:", S['Body']))
+    story.append(spacer(6))
+    method_data = [
+        ["Phase", "Activities", "Outcomes"],
+        ["Analysis", "Literature review, competitor analysis, requirements gathering", "Requirements Spec"],
+        ["Design", "UI/UX wireframing, architecture design, ERD modeling", "Design Blueprints"],
+        ["Implementation", "Component development, API integration, scoring engine coding", "Functional Prototype"],
+        ["Evaluation", "Unit testing, system testing, performance benchmarking", "Validation Report"],
+    ]
+    story.append(make_table(method_data, col_widths=[80, 220, 150]))
+    story.append(spacer(12))
+
+    story.append(Paragraph("1.5.2 Project Schedule and Timeline", S['SectionTitle']))
+    story.append(Paragraph(
+        "The project was executed over a period of 16 weeks, following the milestones "
+        "and deliverables outlined in the table below:", S['Body']))
+    story.append(spacer(6))
+    schedule_data = [
+        ["Week", "Milestone", "Status"],
+        ["1-2", "Problem Definition & Literature Review", "Completed"],
+        ["3-4", "System Design & Architecture Modeling", "Completed"],
+        ["5-8", "Core Frontend Development & UI Systems", "Completed"],
+        ["9-10", "Backend Integration (Supabase & OpenRouter)", "Completed"],
+        ["11-13", "ATS Scoring Engine & AI Prompt Tuning", "Completed"],
+        ["14-16", "Testing, Debugging & Thesis Documentation", "Completed"],
+    ]
+    story.append(make_table(schedule_data, col_widths=[60, 310, 80]))
+    story.append(spacer(12))
+
     # 1.6 Organization
     story.append(Paragraph("1.6 Organization of the Thesis", S['SectionTitle']))
     story.append(Paragraph(
@@ -222,5 +279,23 @@ def build_chapter1(S):
         story.append(Paragraph(f"{title} {desc}", S['BodyIndent']))
         story.append(spacer(4))
     
+    story.append(spacer(12))
+
+    story.append(Paragraph("<b>1.6.1 Summary of Core Research Tools</b>", S['SubSection']))
+    story.append(Paragraph(
+        "The following table summarizes the primary research and development tools "
+        "used during various project phases.", S['Body']))
+    story.append(spacer(6))
+    research_tools = [
+        ["Phase", "Primary Tool", "Outcome"],
+        ["Requirement Analysis", "Interview, Comparative Analysis", "User Story Matrix"],
+        ["System Design", "Lucidchart, ERD tools", "Schema & DFD Diagrams"],
+        ["Frontend Dev", "React 18, Vite, TS", "Production-ready UI"],
+        ["Backend Dev", "Supabase (PostgreSQL)", "Secure Cloud Sync"],
+        ["AI Integration", "Claude 3 Opus, OpenRouter", "Intelligent Content Engine"],
+    ]
+    story.append(make_table(research_tools, col_widths=[110, 150, 150]))
+    story.append(spacer(12))
+
     story.append(page_break())
     return story

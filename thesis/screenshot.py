@@ -1,25 +1,22 @@
 from playwright.sync_api import sync_playwright
 import time
+import os
 
 def capture_screenshots():
+    os.makedirs('public/screenshots', exist_ok=True)
     with sync_playwright() as p:
-        browser = p.chromium.launch(args=['--no-sandbox'])
+        # Use system chromium to save time
+        executable = '/usr/bin/chromium' if os.path.exists('/usr/bin/chromium') else '/usr/bin/google-chrome'
+        browser = p.chromium.launch(executable_path=executable, args=['--no-sandbox'])
         page = browser.new_page(viewport={'width': 1280, 'height': 800})
         
         # Go to landing page
         page.goto('http://localhost:8080')
-        # Wait for any animations to finish
         time.sleep(3)
         page.screenshot(path='public/screenshots/real_landing.png')
         
-        # Go to builder or dashboard? 
-        # Click on "Get Started" to go to dashboard/auth
-        # Or Just directly go to /dashboard or /builder? Let's check routes.
-        # For now, let's just save landing.
-        
-        # Let's try to go to builder if possible
         try:
-            page.goto('http://localhost:8080/builder')
+            page.goto('http://localhost:8080/create')
             time.sleep(3)
             page.screenshot(path='public/screenshots/real_builder.png')
         except Exception as e:
@@ -31,6 +28,20 @@ def capture_screenshots():
             page.screenshot(path='public/screenshots/real_dashboard.png')
         except Exception as e:
             print("Could not get dashboard screenshot:", e)
+
+        try:
+            page.goto('http://localhost:8080/templates')
+            time.sleep(3)
+            page.screenshot(path='public/screenshots/real_templates.png')
+        except Exception as e:
+            print("Could not get templates screenshot:", e)
+
+        try:
+            page.goto('http://localhost:8080/admin')
+            time.sleep(3)
+            page.screenshot(path='public/screenshots/real_admin.png')
+        except Exception as e:
+            print("Could not get admin screenshot:", e)
             
         browser.close()
 

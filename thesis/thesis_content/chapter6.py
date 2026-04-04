@@ -1,6 +1,6 @@
 """Chapter 6: Conclusion and Future Scope"""
 from reportlab.platypus import Paragraph
-from .helpers import spacer, page_break
+from .helpers import spacer, page_break, make_table
 
 def build_chapter6(S):
     story = []
@@ -163,7 +163,42 @@ def build_chapter6(S):
         story.append(Paragraph(f"{title} {desc}", S['BodyIndent']))
         story.append(spacer(4))
     
+    story.append(spacer(6))
+    story.append(Paragraph("<b>6.4.1 Development Priority Roadmap</b>", S['SubSection']))
+    story.append(Paragraph(
+        "To manage the implementation of these diverse future scope items, a phased "
+        "roadmap is proposed below, prioritizing high-impact user features.", S['Body']))
+    story.append(spacer(6))
+    roadmap_data = [
+        ["Phase", "Feature Focus", "Priority"],
+        ["Next 3 Months", "Job Description Matching & AI Matching Score", "CRITICAL"],
+        ["6 Months", "Cover Letter Generator & PDF-to-DOCX Conversion", "HIGH"],
+        ["9 Months", "Mobile Application (PWA -> Native) & OAuth Sync", "MEDIUM"],
+        ["1 Year+", "B2B Institution Dashboards & Interview Prep Engine", "STRATEGIC"],
+    ]
+    story.append(make_table(roadmap_data, col_widths=[100, 270, 80]))
     story.append(spacer(12))
+    
+    story.append(spacer(12))
+
+    story.append(Paragraph("<b>6.5 Final Reflection: Ethical AI in Recruitment</b>", S['SectionTitle']))
+    story.append(Paragraph(
+        "As AI becomes deeply embedded in the recruitment lifecycle, ethical considerations "
+        "surrounding algorithmic bias and data privacy become paramount. AI Resume Studio "
+        "addresses these concerns through a 'Human-in-the-Loop' philosophy. The AI is a "
+        "collaborator, not an arbiter. Every AI-generated bullet point or summary must be "
+        "explicitly 'applied' by the user, ensuring that the final document remains a "
+        "true representation of the individual's experience.", S['Body']))
+    story.append(spacer(6))
+    story.append(Paragraph(
+        "Furthermore, by using Claude 3 Opus — a model trained with Constitutional AI "
+        "principles — the system minimizes the risk of generating biased or exclusionary "
+        "language. This project serves as a practical demonstration of how 'Good AI' "
+        "can be used to level the playing field, giving every candidate access to the "
+        "same optimization techniques previously reserved for those who could afford "
+        "professional career coaching. This democratization of recruitment technology "
+        "is perhaps the most significant social contribution of the project.", S['Body']))
+    story.append(spacer(6))
     story.append(Paragraph(
         "In conclusion, AI Resume Studio represents a meaningful step forward in the evolution of "
         "resume building technology. By combining modern web development practices with AI-powered "

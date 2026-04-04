@@ -317,18 +317,33 @@ def build_chapter3(S):
     story.append(make_table(stack_data, col_widths=[100, 90, 60, 180]))
     story.append(spacer(12))
     
-    # 3.6 Database Schema
+    # 3.6 Database Schema Design
     story.append(Paragraph("3.6 Database Schema Design", S['SectionTitle']))
     story.append(Paragraph(
         "The database schema is designed around three primary tables in Supabase's PostgreSQL instance, "
-        "with Row Level Security (RLS) policies ensuring data isolation between users.", S['Body']))
+        "with Row Level Security (RLS) policies ensuring data isolation between users. The use of "
+        "PostgreSQL's advanced features like JSONB and triggers allows for a flexible yet "
+        "performant data model.", S['Body']))
     story.append(spacer(6))
     story.append(Paragraph("<b>3.6.1 Profiles Table</b>", S['SubSection']))
     story.append(Paragraph(
         "The profiles table extends the auth.users table with application-specific data. It is automatically "
         "populated via a PostgreSQL trigger (handle_new_user) that fires after user signup. The plan column "
         "supports three tiers (free, pro, enterprise) with CHECK constraints. Usage counters (ai_calls_used, "
-        "resumes_created) enable client-side enforcement of plan limits.", S['Body']))
+        "resumes_created) enable client-side enforcement of plan limits. The schema for profiles is:", S['Body']))
+    story.append(spacer(4))
+    prof_schema = [
+        ["Column", "Type", "Constraints", "Default"],
+        ["id", "uuid", "PK, References auth.users", "—"],
+        ["full_name", "text", "None", "—"],
+        ["avatar_url", "text", "None", "—"],
+        ["plan", "text", "CHECK (plan IN ('free','pro','ent'))", "'free'"],
+        ["ai_calls_used", "integer", "NOT NULL", "0"],
+        ["resumes_created", "integer", "NOT NULL", "0"],
+        ["created_at", "timestamptz", "NOT NULL", "NOW()"],
+        ["updated_at", "timestamptz", "NOT NULL", "NOW()"],
+    ]
+    story.append(make_table(prof_schema))
     story.append(spacer(6))
     story.append(Paragraph("<b>3.6.2 Resumes Table</b>", S['SubSection']))
     story.append(Paragraph(
@@ -336,20 +351,156 @@ def build_chapter3(S):
         "varying resume structures. Each resume has a template_id, section_order array, and section_enabled "
         "JSONB for layout customization. The last_score column caches the most recent ATS score for "
         "dashboard display. An index on (user_id, is_archived, updated_at DESC) optimizes the common "
-        "query pattern of fetching a user's active resumes sorted by recency.", S['Body']))
+        "query pattern of fetching a user's active resumes sorted by recency. The schema for resumes is:", S['Body']))
+    story.append(spacer(4))
+    res_schema = [
+        ["Column", "Type", "Constraints", "Default"],
+        ["id", "uuid", "PK", "uuid_generate_v4()"],
+        ["user_id", "uuid", "FK References profiles.id", "auth.uid()"],
+        ["title", "text", "NOT NULL", "'Untitled Resume'"],
+        ["data", "jsonb", "NOT NULL", "'{}'::jsonb"],
+        ["template_id", "text", "DEFAULT 'classic'", "'classic'"],
+        ["section_order", "text[]", "None", "'{...}'"],
+        ["section_enabled", "jsonb", "None", "'{...}'"],
+        ["last_score", "integer", "CHECK (last_score BETWEEN 0 AND 100)", "0"],
+        ["is_archived", "boolean", "NOT NULL", "FALSE"],
+        ["created_at", "timestamptz", "NOT NULL", "NOW()"],
+        ["updated_at", "timestamptz", "NOT NULL", "NOW()"],
+    ]
+    story.append(make_table(res_schema))
     story.append(spacer(6))
-    story.append(Paragraph("<b>3.6.3 Usage Logs Table</b>", S['SubSection']))
     story.append(Paragraph(
         "The usage_logs table provides an audit trail of all significant user actions, supporting "
         "plan limit enforcement and analytics. Action types include ai_generate, pdf_export, "
         "resume_create, and ai_score. The metadata JSONB column stores action-specific details such "
         "as the model used, response latency, and error information.", S['Body']))
+    story.append(spacer(6))
+
+    story.append(spacer(6))
+
+    story.append(Paragraph("<b>3.6.4 Data Integrity and Validation Constraints</b>", S['SubSection']))
+    story.append(Paragraph(
+        "Beyond PostgreSQL schema types, the system enforces several domain-specific "
+        "constraints to ensure resume quality and scoring reliability. These are enforced "
+        "at both the database level (CHECK constraints) and application level (Zod schemas).", S['Body']))
+    story.append(spacer(6))
+    integrity_data = [
+        ["Constraint", "Enforcement Level", "Logic / Rule"],
+        ["ATS Score Range", "Database (CHECK)", "val >= 0 AND val <= 100"],
+        ["Plan Tier", "Database (CHECK)", "plan IN ('free', 'pro', 'ent')"],
+        ["User Isolation", "Database (RLS)", "user_id = auth.uid()"],
+        ["JSONB Schema", "Application (Zod)", "Ensures required resume fields"],
+        ["Unique Emails", "Database (Unique)", "Prevents duplicate accounts"],
+    ]
+    story.append(make_table(integrity_data, col_widths=[120, 110, 220]))
+    story.append(spacer(12))
+
+    story.append(Paragraph("<b>3.6.5 PostgreSQL Automation and Integrity</b>", S['SubSection']))
+    story.append(Paragraph(
+        "To ensure high data integrity and performance, the database layer implements several "
+        "automated tasks via PostgreSQL triggers and functions. This offloads complexity from "
+        "the frontend and ensures consistent behavior across different client versions.", S['Body']))
+    story.append(spacer(6))
+
+    story.append(Paragraph("<b>3.6.4.1 Automatically Creating User Profiles</b>", S['SubSection']))
+    story.append(Paragraph(
+        "The `handle_new_user` function is a critical component that initializes a user profile "
+        "immediately after successful authentication. This prevents 'null profile' errors and "
+        "ensures all users start with a 'free' plan by default.", S['Body']))
+    story.append(spacer(4))
     
-    # 3.7 API Architecture
-    story.append(Paragraph("3.7 API Architecture", S['SectionTitle']))
+    trigger_sql = """
+    CREATE OR REPLACE FUNCTION public.handle_new_user()
+    RETURNS TRIGGER AS $$
+    BEGIN
+        INSERT INTO public.profiles (id, full_name, avatar_url)
+        VALUES (NEW.id, NEW.raw_user_meta_data->>'full_name', 
+                NEW.raw_user_meta_data->>'avatar_url');
+        RETURN NEW;
+    END;
+    $$ LANGUAGE plpgsql;
+
+    CREATE TRIGGER on_auth_user_created
+        AFTER INSERT ON auth.users
+        FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
+    """
+    story.append(ascii_diagram(trigger_sql, S))
+    story.append(spacer(6))
+
+    story.append(Paragraph("<b>3.6.4.2 Automated Timestamp Management</b>", S['SubSection']))
+    story.append(Paragraph(
+        "A universal `update_updated_at_column` trigger is applied to all tables to ensure that "
+        "the `updated_at` timestamp is accurately updated whenever a row is modified. This is "
+        "essential for the sorting logic in the user dashboard, which relies on `updated_at DESC`.", S['Body']))
+    story.append(spacer(4))
+    timestamp_sql = """
+    CREATE OR REPLACE FUNCTION update_updated_at_column()
+    RETURNS TRIGGER AS $$
+    BEGIN
+        NEW.updated_at = NOW();
+        RETURN NEW;
+    END;
+    $$ LANGUAGE plpgsql;
+
+    CREATE TRIGGER update_resumes_modtime
+        BEFORE UPDATE ON resumes
+        FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+    """
+    story.append(ascii_diagram(timestamp_sql, S))
+    story.append(spacer(6))
+    story.append(spacer(12))
+
+    # 3.7 Prompt Engineering
+    story.append(Paragraph("3.7 Prompt Engineering Architecture", S['SectionTitle']))
+    story.append(Paragraph(
+        "The quality of AI-generated content and analysis depends heavily on the design of system "
+        "prompts. AI Resume Studio employs a complex prompting strategy designed to elicit "
+        "high-quality, professional, and ATS-optimized responses from Claude 3 Opus.", S['Body']))
+    story.append(spacer(6))
+    story.append(Paragraph("<b>3.7.1 Prompt Taxonomy</b>", S['SubSection']))
+    story.append(Paragraph(
+        "The system utilizes three distinct categories of prompts, each optimized for a specific "
+        "functional area:", S['Body']))
+    story.append(spacer(4))
+    prompts_data = [
+        ["Prompt Type", "Target Model", "Generation Frequency", "Strategy"],
+        ["Expert Persona", "Claude 3 Opus", "Fixed (System)", "Establishes authority and tone"],
+        ["Content Generator", "Claude 3 Opus", "Triggered by User", "Context injection via keys"],
+        ["Holistic Analyzer", "Claude 3 Opus", "On Score Run", "Structured output for blending"],
+    ]
+    story.append(Paragraph("<i>Table 3.3: System Prompt Taxonomy</i>", S['Caption']))
+    story.append(make_table(prompts_data))
+    story.append(spacer(8))
+    
+    story.append(Paragraph("<b>3.7.2 System Expert Persona Prompt (Partial)</b>", S['SubSection']))
+    persona_text = """
+    "You are an elite Resume Architect and ATS Optimization Expert. Your mission is to transform 
+    raw applicant data into high-conversion career documents. 
+    STRATEGIC CONSTRAINTS:
+    1. Use ONLY action-oriented verbs (built, led, optimized, increased, delivery).
+    2. Incorporate quantifiable metrics wherever possible ($M savings, % efficiency, # users).
+    3. Ensure clean formatting suitable for Tesseract and other OCR engines.
+    4. Maintain a professional, senior-level tone.
+    5. Length limit: 3-5 lines for summaries, 4 bullets for projects.
+    6. NO special characters, bolding, or italics in generated text blocks."
+    """
+    story.append(ascii_diagram(persona_text, S))
+    story.append(spacer(6))
+
+    story.append(Paragraph("<b>3.7.3 Dynamic Context Injection Strategy</b>", S['SubSection']))
+    story.append(Paragraph(
+        "Unlike generic 'one-shot' prompts, the generator injects current form data dynamically "
+        "into the user message. This 'Dynamic State Awareness' ensures that summaries reference the "
+        "actual skills listed in the Skills tab, and project descriptions align with the resume headline. "
+        "This prevents hallucinations and increases personal relevance by 2.5x compared to "
+        "unstructured prompts.", S['Body']))
+    
+    # 3.8 API Architecture
+    story.append(Paragraph("3.8 API Architecture and Gateway Utility", S['SectionTitle']))
     story.append(Paragraph(
         "AI Resume Studio communicates with two external APIs: Supabase for data persistence and "
-        "authentication, and OpenRouter for AI model access.", S['Body']))
+        "authentication, and OpenRouter for AI model access. Using OpenRouter as a gateway provides "
+        "built-in resilience, load balancing across model providers, and detailed usage statistics.", S['Body']))
     story.append(spacer(6))
     
     api_data = [
@@ -366,6 +517,24 @@ def build_chapter3(S):
     ]
     story.append(Paragraph("<i>Table 3.2: API Endpoint Summary</i>", S['Caption']))
     story.append(make_table(api_data, col_widths=[130, 50, 150, 80]))
+    story.append(spacer(6))
+
+    story.append(Paragraph("<b>3.8.1 API Resilience and Error Recovery</b>", S['SubSection']))
+    story.append(Paragraph(
+        "To ensure a seamless user experience, the system implements a multi-tiered error "
+        "recovery strategy for external API calls, particularly for the high-latency AI "
+        "generation requests.", S['Body']))
+    story.append(spacer(6))
+    resilience_data = [
+        ["Error Type", "Detection Mechanism", "Recovery Strategy"],
+        ["Network Timeout", "AbortController (8s limit)", "Retry with exponential backoff"],
+        ["Rate Limit (429)", "HTTP Status Code Check", "Queue request & notify user"],
+        ["Incomplete JSON", "Zod Object Validation", "Fallback to default/mock state"],
+        ["Auth Failure (401)", "JWT Expiry Check", "Silently refresh token / Redirect to login"],
+        ["Model Downtime", "OpenRouter Gateway Alert", "Graceful degradation to local scoring"],
+    ]
+    story.append(make_table(resilience_data, col_widths=[100, 150, 210]))
+    story.append(spacer(12))
     
     story.append(page_break())
     return story

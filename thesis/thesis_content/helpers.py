@@ -1,8 +1,36 @@
 """Shared helpers for thesis content generation."""
-from reportlab.platypus import Spacer, PageBreak, Paragraph, Table, TableStyle, Preformatted
+import os
+from reportlab.platypus import Spacer, PageBreak, Paragraph, Table, TableStyle, Preformatted, Image
 from reportlab.lib.units import inch
 from reportlab.lib.colors import HexColor, black, white
 from reportlab.lib.enums import TA_CENTER
+
+def add_image(path, width=5.5*inch, height=None, caption=None, styles=None):
+    """Inserts an image with an optional caption."""
+    try:
+        from reportlab.platypus import Image
+        from reportlab.lib.utils import ImageReader
+        
+        if not os.path.exists(path):
+            return [Paragraph(f"[Image Missing: {os.path.basename(path)}]", styles['Caption'])]
+            
+        reader = ImageReader(path)
+        img_w, img_h = reader.getSize()
+        aspect = img_h / img_w
+        
+        if not height:
+            height = width * aspect
+            
+        img = Image(path, width=width, height=height)
+        story = [spacer(12), img]
+        if caption and styles:
+            story.append(spacer(6))
+            story.append(Paragraph(f"<i>{caption}</i>", styles['Caption']))
+        story.append(spacer(12))
+        return story
+    except Exception as e:
+        print(f"Error adding image {path}: {e}")
+        return [Paragraph(f"[Image Missing: {path}]", styles['Caption'])]
 
 def spacer(h=12):
     return Spacer(1, h)
