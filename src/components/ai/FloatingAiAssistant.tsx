@@ -167,53 +167,36 @@ export function FloatingAiAssistant({ context, enabled = true }: FloatingAiAssis
     if (!userText) return;
     setMessages((prev) => [...prev, { role: "user", content: userText }]);
 
-    const resumeKeywords = /\b(resume|cv|summary|experience|project|skills|education|achievement|certification|internship|job|role|bullet|description|profile|work|career|qualification|objective|professional|action|verb)\b/i;
-    const isResumeRelated = resumeKeywords.test(userText.toLowerCase());
+    const systemPrompt = `You are a highly intelligent, friendly, and adaptive AI assistant integrated inside a Resume Builder platform.
 
-    const systemPrompt = isResumeRelated
-      ? `You are an expert resume consultant.
-STRICT RULES - BE EXTREMELY CONCISE:
-1. Output EXACTLY 2-3 short bullet points MAX.
-2. Each bullet must be under 10 words.
-3. No intro, no outro, no fluff.
-4. Be specific and actionable.
-5. Focus ONLY on the exact question asked.`
-      : `You are a helpful AI assistant.
-STRICT RULES - BE VERY BRIEF:
-1. Answer in 1 SHORT sentence ONLY.
-2. No detailed explanations.
-3. Be direct and to the point.
-4. If off-topic, redirect to resume help.`;
+Your personality:
+- Talk like a real human, not robotic.
+- Be friendly, chill, and conversational when the user is casual.
+- Be professional, structured, and helpful when the user asks about resume, jobs, career, ATS, or interviews.
+- You can switch tone automatically based on user message.
+
+Conversation modes:
+1. Casual Mode: Friendly, fun, engaging. (Use simple Hinglish or English depending on user).
+   Example: User "bhai kya chal raha hai" -> AI "Bas mast 😄 tu bata kya scene hai?"
+2. Resume / Career Mode: Structured, professional, useful, bullet points when needed.
+
+Special Handling for Skills & Languages:
+- Help users add Skills and Languages along with their proficiency level in a smart and user-friendly way.
+- Ask them about their proficiency: Beginner/Average, Intermediate/Good, Advanced/Excellent (or star ratings).
+- Suggest level automatically based on context if possible.
+- Convert skills into an ATS-friendly format. Example: "Python (Advanced)".
+- Suggest improvements and missing skills for their role.
+- If they are confused, give them a conversational prompt to determine their level (like: "Bhai honestly bata, tu kitna comfortable hai isme 😄 Daily use karta hai → Advanced, Thoda bahut aata hai → Intermediate, Bas basics pata hai → Beginner").
+
+General Rules:
+- Automatically detect user intent.
+- Respond naturally to ANY topic. Don't restrict yourself only to resumes.
+- Always try to add value (like ChatGPT premium level).
+- Tone matches user (Hinglish -> Reply Hinglish, English -> Reply English).
+- Never sound confused. Always guide the user clearly.`;
 
     const sanitize = (raw: string) => {
-      let cleanedText = String(raw || "")
-        .replace(/\r/g, "")
-        .replace(/\s+\n/g, "\n")
-        .replace(/\n\s+/g, "\n")
-        .replace(/[ \t]+/g, " ")
-        .replace(/\*/g, "") // Remove bolding markdown
-        .replace(/`/g, "") // Remove code markdown
-        .trim();
-
-      // Split into lines
-      let lines = cleanedText
-        .split("\n")
-        .map((l) => l.trim())
-        .filter(Boolean);
-
-      // Remove numbering if present (e.g. "1. ")
-      lines = lines.map(l => l.replace(/^\d+\.\s*/, "").replace(/^-\s*/, ""));
-
-      const maxLines = isResumeRelated ? 3 : 1;
-
-      if (lines.length > maxLines) {
-        lines = lines.slice(0, maxLines);
-      }
-
-      // Further truncate each line if too long (max 8 words)
-      lines = lines.map(line => line.split(' ').slice(0, 8).join(' '));
-
-      return lines.join("\n");
+      return String(raw || "").trim();
     };
 
     try {
@@ -251,14 +234,15 @@ STRICT RULES - BE VERY BRIEF:
         aiText = sanitize(data.choices?.[0]?.message?.content || "No response generated.");
       } catch (err) {
         console.warn("AI Assistant API failed, using intelligent mock fallback:", err);
+        const resumeKeywords = /\b(resume|cv|summary|experience|project|skills|education|achievement|certification|internship|job|role|bullet|description|profile|work|career|qualification|objective|professional|action|verb)\b/i;
+        const isResumeRelated = resumeKeywords.test(userText.toLowerCase());
+
         if (isResumeRelated) {
           aiText = sanitize(
-            "• Use strong action verbs like 'Developed' or 'Managed'\n" +
-            "• Include quantifiable metrics (e.g., 'improved by 20%')\n" +
-            "• Keep descriptions concise and focused on impact"
+            "Bhai resume me hamesha strong action verbs (jaise 'Developed' ya 'Managed') use karo. Aur numbers/metrics zaroor include karo (e.g. 'improved by 20%'). Kuch aur help chahiye?"
           );
         } else {
-          aiText = sanitize("I'm your AI Resume Assistant. How can I help you improve your professional profile today?");
+          aiText = sanitize("Yaar abhi external AI service me thoda delay hai. Koi baat nahi, aap apna sawal puchho main yahi help karunga! 😄");
         }
       }
 
