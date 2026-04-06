@@ -94,7 +94,7 @@ def build_certificate(S):
         f"has successfully completed the Practical file of <b>{SUBJECT}</b> for Semester I."
     )
     story.append(Paragraph(text, S['Body']))
-    story.append(spacer(140))
+    story.append(spacer(60))
     
     sig_data = [
         [Paragraph("Submitted To:", S['Body']), Paragraph("Signature of Faculty", S['Body'])]
@@ -121,7 +121,7 @@ def build_declaration(S):
         f"degree or diploma to the best of my knowledge and belief."
     )
     story.append(Paragraph(text, S['Body']))
-    story.append(spacer(100))
+    story.append(spacer(50))
     
     sig_data = [
         [Paragraph(f"Name: {STUDENT_NAME}", S['BodyLeft']), Paragraph("Student Signature", S['BodyLeft'])]
@@ -143,7 +143,7 @@ def build_acknowledgment(S):
         "me in doing a lot of Research and I came to know about so many new things. I am really thankful to them."
     )
     story.append(Paragraph(text, S['Body']))
-    story.append(spacer(100))
+    story.append(spacer(50))
     story.append(Paragraph(f"<b>{STUDENT_NAME}</b>", S['BodyLeft']))
     story.append(PageBreak())
     return story
@@ -199,33 +199,35 @@ def build_practicals(S):
     
     # 6. PRACTICAL PAGES
     for p in practicals:
-        story.append(spacer(20))
-        story.append(Paragraph(p['title'], S['PracticalTitle']))
+        p_story = []
+        p_story.append(spacer(10))
+        p_story.append(Paragraph(p['title'], S['PracticalTitle']))
         
         # Aim
-        story.append(Paragraph(f"Aim: {p['aim']}", S['BodyLeft']))
-        story.append(spacer(10))
+        p_story.append(Paragraph(f"<b>Aim:</b> {p['aim']}", S['BodyLeft']))
+        p_story.append(spacer(6))
         
         # Input
-        story.append(Paragraph("The Input (Source Code HTML Page):", S['PracticalSection']))
+        p_story.append(Paragraph("The Input (Source Code HTML Page):", S['PracticalSection']))
         input_path = p['input_img'] if os.path.exists(p['input_img']) else p['input_img'].replace('.png', '.jpg')
         if os.path.exists(input_path):
-            img = Image(input_path, width=6*inch, height=3.5*inch, kind='proportional')
-            story.append(img)
+            img = Image(input_path, width=5.8*inch, height=3.2*inch, kind='proportional')
+            p_story.append(img)
         else:
-            story.append(Paragraph(f"<i>[Please place input.png in {os.path.dirname(input_path)}]</i>", S['Body']))
+            p_story.append(Paragraph(f"<i>[Please place input.png in {os.path.dirname(input_path)}]</i>", S['Body']))
         
-        story.append(spacer(20))
+        p_story.append(spacer(10))
         
         # Output
-        story.append(Paragraph("The Output HTML Page:", S['PracticalSection']))
+        p_story.append(Paragraph("The Output HTML Page:", S['PracticalSection']))
         output_path = p['output_img'] if os.path.exists(p['output_img']) else p['output_img'].replace('.png', '.jpg')
         if os.path.exists(output_path):
-            img = Image(output_path, width=6*inch, height=3.5*inch, kind='proportional')
-            story.append(img)
+            img = Image(output_path, width=5.8*inch, height=3.2*inch, kind='proportional')
+            p_story.append(img)
         else:
-            story.append(Paragraph(f"<i>[Please place output.png in {os.path.dirname(output_path)}]</i>", S['Body']))
+            p_story.append(Paragraph(f"<i>[Please place output.png in {os.path.dirname(output_path)}]</i>", S['Body']))
             
+        story.append(KeepTogether(p_story))
         story.append(PageBreak())
 
     return story

@@ -1,5 +1,5 @@
 """Chapter 5: Results and Discussion (approx. 2000-3000 words)"""
-from reportlab.platypus import Paragraph, Image
+from reportlab.platypus import Paragraph, Image, KeepTogether
 from reportlab.lib.units import inch
 import os
 from .helpers import spacer, page_break, make_table, add_image
@@ -85,9 +85,11 @@ def build_chapter5(S):
         ["Projects", "No entries", "0", "0", "PASS"],
         ["Overall", "—", "0", "0", "PASS"],
     ]
-    story.append(Paragraph("<i>Table 5.1: Test Case 1 — Empty Resume Results</i>", S['Caption']))
-    story.append(make_table(tc1))
-    story.append(spacer(10))
+    story.append(KeepTogether([
+        Paragraph("<i>Table 5.1: Test Case 1 — Empty Resume Results</i>", S['Caption']),
+        make_table(tc1),
+        spacer(6)
+    ]))
     
     story.append(Paragraph("<b>Test Case 2: Fresh Graduate (Minimalist)</b>", S['SubSection']))
     story.append(Paragraph(
@@ -105,9 +107,11 @@ def build_chapter5(S):
         ["Overall", "32", "—", "Resume needs significant content depth"],
         ["ATS Score", "28", "—", "Poor keyword density; low impact"],
     ]
-    story.append(Paragraph("<i>Table 5.2: Test Case 2 — Fresh Graduate Results</i>", S['Caption']))
-    story.append(make_table(tc2))
-    story.append(spacer(10))
+    story.append(KeepTogether([
+        Paragraph("<i>Table 5.2: Test Case 2 — Fresh Graduate Results</i>", S['Caption']),
+        make_table(tc2),
+        spacer(6)
+    ]))
     
     story.append(Paragraph("<b>Test Case 3: Mid-Level Developer (Experienced)</b>", S['SubSection']))
     story.append(Paragraph(
@@ -127,9 +131,11 @@ def build_chapter5(S):
         ["Overall", "91", "—", "Strong, recruiter-ready profile"],
         ["ATS Score", "95", "—", "High matching probability"],
     ]
-    story.append(Paragraph("<i>Table 5.3: Test Case 3 — Mid-Level Developer Results</i>", S['Caption']))
-    story.append(make_table(tc3))
-    story.append(spacer(10))
+    story.append(KeepTogether([
+        Paragraph("<i>Table 5.3: Test Case 3 — Mid-Level Developer Results</i>", S['Caption']),
+        make_table(tc3),
+        spacer(6)
+    ]))
 
     story.append(Paragraph("<b>Test Case 4: Highly Dense Resume (Senior Software Architect)</b>", S['SubSection']))
     story.append(Paragraph(
@@ -143,9 +149,11 @@ def build_chapter5(S):
         ["Action Verbs", "18 distinct verbs found", "100", "< 1ms"],
         ["Overall JSON Size", "28.5 KB", "96", "< 1ms processing"],
     ]
-    story.append(Paragraph("<i>Table 5.4: Test Case 4 — Large Content Performance Results</i>", S['Caption']))
-    story.append(make_table(tc_dense))
-    story.append(spacer(10))
+    story.append(KeepTogether([
+        Paragraph("<i>Table 5.4: Test Case 4 — Large Content Performance Results</i>", S['Caption']),
+        make_table(tc_dense),
+        spacer(6)
+    ]))
     
     story.append(Paragraph("<b>Test Case 5: AI-Enhanced Analysis Blending</b>", S['SubSection']))
     story.append(Paragraph(
@@ -160,9 +168,11 @@ def build_chapter5(S):
         ["Impact Quality", "92", "80", "87.2", "-4.8"],
         ["Keyword Strategy", "100", "92", "96.8", "-3.2"],
     ]
-    story.append(Paragraph("<i>Table 5.5: Rule-Based vs AI-Enhanced Score Blending Evaluation</i>", S['Caption']))
-    story.append(make_table(tc4))
-    story.append(spacer(6))
+    story.append(KeepTogether([
+        Paragraph("<i>Table 5.5: Rule-Based vs AI-Enhanced Score Blending Evaluation</i>", S['Caption']),
+        make_table(tc4),
+        spacer(6)
+    ]))
     story.append(Paragraph(
         "Result: The blended approach produces scores that correlate better with professional "
         "evaluations. While the rule-based engine is excellent at checking for existence (Is there a summary?), "
@@ -226,9 +236,11 @@ def build_chapter5(S):
         ["Review summary", "Detailed", "Strong, but mention React experience explicitly", "High"],
         ["Tell me a joke", "Any", "I'm a resume expert, but here's a joke...", "Safe"],
     ]
-    story.append(Paragraph("<i>Table 5.6: AI Assistant Context-Awareness Test Log</i>", S['Caption']))
-    story.append(make_table(tc_chat, col_widths=[100, 80, 220, 70]))
-    story.append(spacer(8))
+    story.append(KeepTogether([
+        Paragraph("<i>Table 5.6: AI Assistant Context-Awareness Test Log</i>", S['Caption']),
+        make_table(tc_chat, col_widths=[100, 80, 220, 70]),
+        spacer(6)
+    ]))
     
     # 5.4 Performance
     story.append(Paragraph("5.4 Performance and Resource Analysis", S['SectionTitle']))
@@ -247,9 +259,11 @@ def build_chapter5(S):
         ["Bundle Size", "Main JS Chunk (Gzipped)", "< 500KB", "285KB", "PASS"],
         ["Lighthouse SEO", "Meta tags, structure, accessibility", "90+", "100", "PASS"],
     ]
-    story.append(Paragraph("<i>Table 5.7: Detailed System Performance Benchmarks</i>", S['Caption']))
-    story.append(make_table(perf_data, col_widths=[100, 140, 70, 70, 70]))
-    story.append(spacer(12))
+    story.append(KeepTogether([
+        Paragraph("<i>Table 5.7: Detailed System Performance Benchmarks</i>", S['Caption']),
+        make_table(perf_data, col_widths=[100, 140, 70, 70, 70]),
+        spacer(8)
+    ]))
     
     # 5.5 Visual Design
     story.append(Paragraph("5.5 User Interface and Design Language", S['SectionTitle']))
@@ -290,9 +304,11 @@ def build_chapter5(S):
         ["Formatting / Template Selection", "10.0", "2.5", "75.0%"],
         ["Overall Time-to-Complete", "83.5", "16.2", "80.6%"],
     ]
-    story.append(Paragraph("<i>Table 5.7.1: User Efficiency Gains with AI Integration</i>", S['Caption']))
-    story.append(make_table(efficiency_data))
-    story.append(spacer(8))
+    story.append(KeepTogether([
+        Paragraph("<i>Table 5.7.1: User Efficiency Gains with AI Integration</i>", S['Caption']),
+        make_table(efficiency_data),
+        spacer(6)
+    ]))
     story.append(Paragraph(
         "Analysis: The AI integration provides a dramatic 80.6% reduction in overall resume creation "
         "time. More importantly, Group B's output showed a 45% higher average ATS score (88 vs 61), "
@@ -316,8 +332,10 @@ def build_chapter5(S):
         ["Authentication", "Supabase Auth with JWT and 2FA Support", "PASSED"],
         ["API Security", "Client-side key obfuscation & backend rotation", "PASSED"],
     ]
-    story.append(make_table(security_data, col_widths=[120, 250, 80]))
-    story.append(spacer(12))
+    story.append(KeepTogether([
+        make_table(security_data, col_widths=[120, 250, 80]),
+        spacer(8)
+    ]))
 
     # 5.6 Comparative
     story.append(Paragraph("5.6 Comparative Market Analysis", S['SectionTitle']))
@@ -331,15 +349,17 @@ def build_chapter5(S):
         ["Data Privacy", "User-Owned / RLS", "SaaS-Owned", "SaaS-Owned", "SaaS-Owned"],
         ["Auto-Save", "10s Real-time", "Yes", "Manual / 5m", "N/A"],
     ]
-    story.append(Paragraph("<i>Table 5.8: Feature Comparison — AI Resume Studio vs Competitors</i>", S['Caption']))
-    story.append(make_table(comp_data, col_widths=[100, 110, 80, 100, 80]))
-    story.append(spacer(8))
+    story.append(KeepTogether([
+        Paragraph("<i>Table 5.8: Feature Comparison — AI Resume Studio vs Competitors</i>", S['Caption']),
+        make_table(comp_data, col_widths=[100, 110, 80, 100, 80]),
+        spacer(6)
+    ]))
     story.append(Paragraph(
         "Analysis: AI Resume Studio offers significant value proposition over popular tools by "
         "integrating professional AI generation and advanced ATS analysis into a single free platform. "
         "While established tools have more templates, AI Resume Studio leads in intelligent "
         "assistance and ATS-aware design principles.", S['Body']))
-    story.append(spacer(6))
+    story.append(spacer(4))
 
     story.append(Paragraph("<b>5.6.1 Market Positioning and Strategic Advantage</b>", S['SubSection']))
     story.append(Paragraph(

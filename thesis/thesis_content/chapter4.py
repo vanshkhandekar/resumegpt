@@ -1,5 +1,5 @@
 """Chapter 4: Implementation (approx. 4000-6000 words)"""
-from reportlab.platypus import Paragraph, Preformatted
+from reportlab.platypus import Paragraph, Preformatted, KeepTogether
 from .helpers import spacer, page_break, make_table, ascii_diagram
 
 def build_chapter4(S):
@@ -28,8 +28,10 @@ def build_chapter4(S):
         ["Supabase CLI", "Latest", "Local database development"],
         ["Chrome DevTools", "Latest", "Debugging and performance profiling"],
     ]
-    story.append(make_table(env_data, col_widths=[120, 80, 250]))
-    story.append(spacer(12))
+    story.append(KeepTogether([
+        make_table(env_data, col_widths=[120, 80, 250]),
+        spacer(8)
+    ]))
     
     story.append(Paragraph(
         "Project initialization involved creating a Vite-powered React TypeScript application with "
@@ -117,9 +119,11 @@ def build_chapter4(S):
     |-- tailwind.config.ts                   # Tailwind customization
     +-- tsconfig.json                        # TypeScript configuration
     """
-    story.append(Paragraph("<i>Figure 4.1: Complete Project Folder Structure</i>", S['Caption']))
-    story.append(ascii_diagram(folder, S))
-    story.append(spacer(12))
+    story.append(KeepTogether([
+        Paragraph("<i>Figure 4.1: Complete Project Folder Structure</i>", S['Caption']),
+        ascii_diagram(folder, S),
+        spacer(8)
+    ]))
     
     story.append(Paragraph(
         "The codebase contains approximately 5,000+ lines of custom application code across 45 "
@@ -190,9 +194,11 @@ def build_chapter4(S):
         ["Pulse", "Color", "#ec4899", "Pink skills with chip styling"],
         ["Elegant", "Color", "#6366f1", "Indigo accent with lines"],
     ]
-    story.append(Paragraph("<i>Table 4.1: Resume Template Catalog (Selected)</i>", S['Caption']))
-    story.append(make_table(template_data, col_widths=[70, 55, 70, 240]))
-    story.append(spacer(12))
+    story.append(KeepTogether([
+        Paragraph("<i>Table 4.1: Resume Template Catalog (Selected)</i>", S['Caption']),
+        make_table(template_data, col_widths=[70, 55, 70, 240]),
+        spacer(8)
+    ]))
     
     story.append(Paragraph("<b>4.3.3 Section Reordering and Toggle System</b>", S['SubSection']))
     story.append(Paragraph(
@@ -303,9 +309,11 @@ def build_chapter4(S):
         ["Education", "15%", "Academic qualifications verification"],
         ["Certifications", "8%", "Additional credibility (supplementary)"],
     ]
-    story.append(Paragraph("<i>Table 4.2: ATS Score Weight Distribution</i>", S['Caption']))
-    story.append(make_table(weight_data, col_widths=[100, 60, 290]))
-    story.append(spacer(10))
+    story.append(KeepTogether([
+        Paragraph("<i>Table 4.2: ATS Score Weight Distribution</i>", S['Caption']),
+        make_table(weight_data, col_widths=[100, 60, 290]),
+        spacer(6)
+    ]))
     
     story.append(Paragraph("<b>ATS Compatibility Score:</b>", S['SubSection']))
     story.append(Paragraph(
@@ -334,9 +342,11 @@ def build_chapter4(S):
         ["Counts (#)", "+3", "Matches 'Scale' query", "Tangible Results"],
         ["Timeframes", "+2", "Matches 'Delivery' query", "Punctuality/Speed"],
     ]
-    story.append(Paragraph("<i>Table 4.2.1: Scoring Delta for Quantifiable Elements</i>", S['Caption']))
-    story.append(make_table(metric_impact))
-    story.append(spacer(8))
+    story.append(KeepTogether([
+        Paragraph("<i>Table 4.2.1: Scoring Delta for Quantifiable Elements</i>", S['Caption']),
+        make_table(metric_impact),
+        spacer(6)
+    ]))
     story.append(spacer(6))
     
     story.append(Paragraph("<b>4.5.2 AI-Enhanced Scoring</b>", S['SubSection']))
@@ -411,8 +421,10 @@ def build_chapter4(S):
             SET aiBusy = null
     END FUNCTION
     """
-    story.append(ascii_diagram(pseudocode, S))
-    story.append(spacer(6))
+    story.append(KeepTogether([
+        ascii_diagram(pseudocode, S),
+        spacer(4)
+    ]))
     
     story.append(Paragraph("<b>4.6.3 AI Keyword Optimizer</b>", S['SubSection']))
     story.append(Paragraph(
@@ -449,9 +461,11 @@ def build_chapter4(S):
         ["Level Labels", "Java → Intermediate", "Dropdown selector", "Clear categorical assessment"],
         ["Progress Bar", "React → 85%", "Slider component", "Precise percentage representation"],
     ]
-    story.append(Paragraph("<i>Table 4.3: Skill Proficiency Representation Formats</i>", S['Caption']))
-    story.append(make_table(prof_data, col_widths=[80, 110, 120, 140]))
-    story.append(spacer(8))
+    story.append(KeepTogether([
+        Paragraph("<i>Table 4.3: Skill Proficiency Representation Formats</i>", S['Caption']),
+        make_table(prof_data, col_widths=[80, 110, 120, 140]),
+        spacer(6)
+    ]))
     
     story.append(Paragraph(
         "In the database, skill proficiency data is stored within the resume's JSONB data column as an "
@@ -496,8 +510,10 @@ def build_chapter4(S):
           - name: Deploy to Vercel
             run: npx vercel --token ${{ secrets.VERCEL_TOKEN }} --prod --yes
     """
-    story.append(ascii_diagram(cicd_yaml, S))
-    story.append(spacer(6))
+    story.append(KeepTogether([
+        ascii_diagram(cicd_yaml, S),
+        spacer(4)
+    ]))
 
     story.append(Paragraph("<b>4.7.4 Progressive Web App (PWA) Features</b>", S['SubSection']))
     story.append(Paragraph(

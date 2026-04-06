@@ -1,6 +1,6 @@
 """Shared helpers for thesis content generation."""
 import os
-from reportlab.platypus import Spacer, PageBreak, Paragraph, Table, TableStyle, Preformatted, Image
+from reportlab.platypus import Spacer, PageBreak, Paragraph, Table, TableStyle, Preformatted, Image, KeepTogether
 from reportlab.lib.units import inch
 from reportlab.lib.colors import HexColor, black, white
 from reportlab.lib.enums import TA_CENTER
@@ -22,17 +22,17 @@ def add_image(path, width=5.5*inch, height=None, caption=None, styles=None):
             height = width * aspect
             
         img = Image(path, width=width, height=height)
-        story = [spacer(12), img]
+        story = [spacer(8), img]
         if caption and styles:
-            story.append(spacer(6))
+            story.append(spacer(4))
             story.append(Paragraph(f"<i>{caption}</i>", styles['Caption']))
-        story.append(spacer(12))
+        story.append(spacer(8))
         return story
     except Exception as e:
         print(f"Error adding image {path}: {e}")
         return [Paragraph(f"[Image Missing: {path}]", styles['Caption'])]
 
-def spacer(h=12):
+def spacer(h=8):
     return Spacer(1, h)
 
 def page_break():
