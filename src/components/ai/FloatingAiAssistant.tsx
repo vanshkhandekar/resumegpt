@@ -267,26 +267,33 @@ FINAL GOAL: User should feel like chatting with a smart friend, NOT a tool.`;
         const resumeKeywords = /\b(resume|cv|summary|experience|project|skills|education|achievement|certification|internship|job|role|bullet|description|profile|work|career|qualification|objective|professional|action|verb)\b/i;
         const casualKeywords = /\b(hi|hello|hey|kya|kaise|kaisa|bhai|yaar|bro|sup|thanks|thankyou|haan|nahi|ok|theek|chal)\b/i;
         const isResumeRelated = resumeKeywords.test(userText.toLowerCase());
-        const isCasual = casualKeywords.test(userText.toLowerCase());
+        const isCasual = casualKeywords.test(userText.toLowerCase()) || userText.length < 15;
 
-        if (isCasual && !isResumeRelated) {
-          const casualReplies = [
-            "Bas yaar mast 😄 tu bata kya chal rha?",
-            "Arey bhai! Bol na kya scene hai 😎",
-            "Haan bhai sun rha hu, bol! 👋",
-            "Kya baat hai bro, kaise ho? 😄",
-            "Anytime bhai 😄 kuch aur chahiye toh bol",
-          ];
-          aiText = casualReplies[Math.floor(Math.random() * casualReplies.length)];
-        } else if (isResumeRelated) {
+        // Smart offline generic fallback
+        if (isResumeRelated) {
           const resumeReplies = [
             "Chal resume pe kaam karte hain 💼 Bata kis role ke liye chahiye?",
             "Resume me strong action verbs use kar bhai — like 'Developed', 'Managed'. Aur numbers daal 📊",
             "Achha bata — fresher hai ya experience hai? Usse template decide hoga 👍",
+            "Tere skills tagde lag rahe hain! Isko clean bullet points me likhenge.",
           ];
           aiText = resumeReplies[Math.floor(Math.random() * resumeReplies.length)];
+        } else if (isCasual) {
+          const casualReplies = [
+            "Bas yaar mast 😄 tu bata kya chal rha?",
+            "Arey bhai! Bol na kya scene hai 😎",
+            "Haan bhai sun rha hu, bol! 👋",
+            "Kya baat hai bro, sab theek? 😄",
+            "Anytime bhai 😄 kuch aur chahiye toh bol",
+          ];
+          aiText = casualReplies[Math.floor(Math.random() * casualReplies.length)];
         } else {
-          aiText = "Yaar abhi network me thoda issue hai 😅 Ek baar phir try kar, main yahi hu!";
+          const fallbackReplies = [
+            "Arey haan samajh gaya 👍 Par abhi network down hai thoda, tu API key admin panel me update kar de!",
+            "Hmm, sahi bol rha hai. Waise ATS ke baare me kuch help chahiye tujhe?",
+            "Accha... chal ek kaam karte hain, pehle tera experience list down karte hain. Kya bolta hai?",
+          ];
+          aiText = fallbackReplies[Math.floor(Math.random() * fallbackReplies.length)];
         }
       }
 

@@ -364,14 +364,34 @@ export default function ResumeBuilder() {
     setAiBusy(key);
     
     const activeKey = getActiveApiKey();
+
+    // Smart system prompt based on what we're generating
+    const summarySystemPrompt = `You are a smart and realistic description generator.
+
+Your task:
+- User jo bhi topic / profession / interest bataye, uske upar 4-6 lines ka simple, natural, and realistic description likho.
+
+STRICT RULES:
+1. Length: Minimum 4 lines, maximum 6 lines. Not too long, not too short.
+2. Writing Style: Simple, clear, and human-like. No overacting, no exaggeration. No fake motivation lines.
+3. Content Rules: Only write about what user asked. Stay relevant to topic. No unnecessary extra information.
+4. Tone: Natural and realistic. Slightly professional but not robotic.
+5. Avoid: Big fancy words, "I am passionate..." type overused lines, repeating same point, too much hype.
+6. Output ONLY the description text. No labels, no headings, no chat.
+7. If user gives very short input, assume context and still generate a proper description.`;
+
+    const defaultSystemPrompt = `You are an expert ATS resume writer. CRITICAL: Strictly adhere ONLY to the facts provided in the prompt. DO NOT invent fake metrics, companies, or experiences. Focus on professional phrasing and ATS optimization while remaining 100% honest to the user's input. Output ONLY the generated text, no chat or filler.`;
+
+    const systemContent = key === "summary" ? summarySystemPrompt : defaultSystemPrompt;
+
     const payload = {
       model: "anthropic/claude-3-opus",
       messages: [
-        { role: "system", content: "You are an expert ATS resume writer. CRITICAL: Strictly adhere ONLY to the facts provided in the prompt. DO NOT invent fake metrics, companies, or experiences. Focus on professional phrasing and ATS optimization while remaining 100% honest to the user's input. Output ONLY the generated text, no chat or filler." },
+        { role: "system", content: systemContent },
         { role: "user", content: prompt }
       ],
-      max_tokens: 250,
-      temperature: 0.5,
+      max_tokens: 350,
+      temperature: key === "summary" ? 0.7 : 0.5,
     };
 
     try {
@@ -401,17 +421,39 @@ export default function ResumeBuilder() {
       toast({ title: "AI generated", description: "You can edit it manually too." });
     } catch (e) {
       console.warn("AI Generate failed, falling back to mock text:", e);
-      const mockContent = key.startsWith("project") 
-        ? "• Developed scalable components using modern frameworks\n• Reduced application load time by optimizing assets\n• Collaborated closely with designers to ensure responsive rendering" 
-        : key === "summary"
-        ? "Results-oriented professional with a strong foundation in modern development practices. Skilled in building responsive and accessible interfaces while collaborating effectively with cross-functional teams."
-        : key === "skills"
-        ? "JavaScript, TypeScript, React, Node.js, HTML, CSS, Git, Tailwind"
-        : "• Implemented best practices resulting in 20% performance increase\n• Maintained code quality through peer reviews and strong testing";
+      
+      // Smart mock fallback based on user input
+      let mockContent = "";
+      const lowerPrompt = prompt.toLowerCase();
+      
+      if (key === "summary") {
+        // Generate topic-relevant mock based on keywords in the prompt
+        if (/video\s*edit/i.test(lowerPrompt)) {
+          mockContent = "A video editor works on cutting and arranging video clips to create a final output. They use editing software to improve visuals, add effects, and adjust audio. Good timing and creativity are important in this field. Video editors often work on content like YouTube videos, films, or ads. Basic knowledge of tools like Premiere Pro or After Effects is useful.";
+        } else if (/music/i.test(lowerPrompt)) {
+          mockContent = "Music is a form of art that combines sound, rhythm, and melody. It is used for entertainment, relaxation, and expression of emotions. Different genres like pop, rock, and classical offer different styles. People listen to music in their daily life for mood and enjoyment. It also plays an important role in culture and media.";
+        } else if (/bca|computer\s*application/i.test(lowerPrompt)) {
+          mockContent = "A BCA student studies computer applications and basic programming concepts. The course includes subjects like databases, software development, and networking. It helps students build technical and problem-solving skills. Many students learn languages like C, Java, or Python during this course. It is a good foundation for careers in IT or software development.";
+        } else if (/web\s*dev|frontend|front.?end|react|html|css/i.test(lowerPrompt)) {
+          mockContent = "A web developer builds and maintains websites and web applications. They work with technologies like HTML, CSS, and JavaScript to create user-friendly interfaces. Understanding of responsive design and cross-browser compatibility is important. Many web developers also work with frameworks like React or Vue for dynamic applications. It is a high-demand skill in the current tech industry.";
+        } else if (/python|data|machine\s*learn|ai|ml/i.test(lowerPrompt)) {
+          mockContent = "Python is a versatile programming language widely used in software development, data analysis, and automation. It has a simple syntax that makes it beginner-friendly while being powerful enough for advanced applications. Python is commonly used in fields like machine learning, web development, and scripting. Libraries like NumPy, Pandas, and TensorFlow make it a strong choice for data science. It is one of the most popular languages in the tech industry today.";
+        } else if (/design|graphic|ui|ux/i.test(lowerPrompt)) {
+          mockContent = "A designer creates visual content to communicate ideas and information effectively. They work with tools like Figma, Photoshop, or Illustrator to design layouts, graphics, and user interfaces. Good design requires understanding of color theory, typography, and user experience. Designers often collaborate with developers and product teams to bring ideas to life. It is a creative field with growing demand in digital products.";
+        } else {
+          mockContent = `A professional working in the field of ${lowerPrompt.slice(0, 40).trim() || "technology"} focuses on delivering quality work and building relevant skills. They stay updated with industry trends and best practices. Good communication and problem-solving abilities are important in this role. Continuous learning and practical experience help in career growth. It is a field with opportunities for both freshers and experienced professionals.`;
+        }
+      } else if (key.startsWith("project")) {
+        mockContent = "• Developed scalable components using modern frameworks\n• Reduced application load time by optimizing assets\n• Collaborated closely with designers to ensure responsive rendering";
+      } else if (key === "skills") {
+        mockContent = "JavaScript, TypeScript, React, Node.js, HTML, CSS, Git, Tailwind";
+      } else {
+        mockContent = "• Implemented best practices resulting in 20% performance increase\n• Maintained code quality through peer reviews and strong testing";
+      }
       
       onApply(mockContent);
       bumpAiUsageMetric();
-      toast({ title: "AI generated (Mock)", description: "You can edit it manually too." });
+      toast({ title: "AI generated (Offline)", description: "You can edit it manually too." });
     } finally {
       setAiBusy(null);
     }
@@ -524,8 +566,9 @@ export default function ResumeBuilder() {
                           aiGenerate({
                             key: "summary",
                             prompt:
-                              summaryAiInput.trim() ||
-                              `Write a professional resume summary in 3–4 lines for: ${name || "a candidate"}. Headline: ${headline}.`,
+                              summaryAiInput.trim()
+                                ? `Generate a 4-6 line description about: ${summaryAiInput.trim()}`
+                                : `Generate a 4-6 line professional description for: ${name || "a candidate"} who is a ${headline || "professional"}.`,
                             onApply: (t) => setSummary(t),
                           })
                         }
