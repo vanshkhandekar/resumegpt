@@ -14,6 +14,7 @@ import { Link } from "react-router-dom";
 import { EmptyStateCard } from "@/components/resume/EmptyStateCard";
 import { StepProgressHeader } from "@/components/resume/StepProgressHeader";
 import { SaveIndicator } from "@/components/resume/SaveIndicator";
+import { StarRating } from "@/components/resume/StarRating";
 import { useResumes } from "@/hooks/useResumes";
 import { useAutoSave } from "@/hooks/useAutoSave";
 import { bumpAiUsageMetric, bumpResumeCreatedMetric, bumpTemplateUsageMetric, getActiveApiKey, isTemplateVisible } from "@/lib/demoStorage";
@@ -62,7 +63,9 @@ export default function ResumeBuilder() {
   const [summaryAiInput, setSummaryAiInput] = useState("");
   const [photoDataUrl, setPhotoDataUrl] = useState<string>("");
   const [skills, setSkills] = useState<string>("");
+  const [skillsRatings, setSkillsRatings] = useState<Record<string, number>>({});
   const [languages, setLanguages] = useState<string>("");
+  const [languagesRatings, setLanguagesRatings] = useState<Record<string, number>>({});
   const [achievements, setAchievements] = useState<string>("");
 
   const [aiBusy, setAiBusy] = useState<string | null>(null);
@@ -228,7 +231,9 @@ export default function ResumeBuilder() {
           setSummary(d.summary || "");
           setPhotoDataUrl(d.photoDataUrl || "");
           setSkills(d.skills || "");
+          setSkillsRatings(d.skillsRatings || {});
           setLanguages(d.languages || "");
+          setLanguagesRatings(d.languagesRatings || {});
           setAchievements(d.achievements || "");
           setEducation(d.education || []);
           setProjects(d.projects || []);
@@ -253,7 +258,7 @@ export default function ResumeBuilder() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
-  const currentData = useMemo(() => ({ name, headline, email, phone, summary, photoDataUrl, skills, languages, achievements, education, projects, experience, certs }), [name, headline, email, phone, summary, photoDataUrl, skills, languages, achievements, education, projects, experience, certs]);
+  const currentData = useMemo(() => ({ name, headline, email, phone, summary, photoDataUrl, skills, skillsRatings, languages, languagesRatings, achievements, education, projects, experience, certs }), [name, headline, email, phone, summary, photoDataUrl, skills, skillsRatings, languages, languagesRatings, achievements, education, projects, experience, certs]);
   const { isSaving, lastSavedAt } = useAutoSave(id || "", currentData, selectedTemplate, order, sectionEnabled);
 
   const move = (id: (typeof order)[number], dir: -1 | 1) => {
@@ -730,6 +735,28 @@ export default function ResumeBuilder() {
                   onChange={(e) => setSkills(e.target.value)}
                   className="min-h-[140px]"
                 />
+                
+                {skills.trim() && (
+                  <div className="rounded-md border p-4 bg-muted/10 space-y-3 mt-2">
+                    <p className="text-sm font-medium">Rate Your Skills</p>
+                    <div className="grid gap-2">
+                      {Array.from(new Set(skills.split(/[\n,]/).map(s => s.trim()).filter(Boolean))).map(skill => (
+                        <div key={skill} className="flex flex-wrap sm:flex-nowrap items-center justify-between gap-3 p-2 border-b last:border-0 border-border/50">
+                          <span className="text-sm truncate font-medium">{skill}</span>
+                          <div className="flex items-center gap-3">
+                            <StarRating 
+                              rating={skillsRatings[skill] || 0} 
+                              onChange={(val) => setSkillsRatings({...skillsRatings, [skill]: val})} 
+                            />
+                            <span className="text-xs text-muted-foreground w-[68px] text-right">
+                              {skillsRatings[skill] ? ["Beginner", "Basic", "Good", "Very Good", "Excellent"][skillsRatings[skill] - 1] : "Unrated"}
+                            </span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <p className="text-xs text-muted-foreground">Tip: Use comma separated for clean formatting.</p>
                   <Button
@@ -764,11 +791,33 @@ export default function ResumeBuilder() {
               </CardHeader>
               <CardContent className="grid gap-3">
                 <Textarea
-                  placeholder="Languages (comma separated or one per line)\nExample: English (Fluent), Hindi (Native), Marathi (Intermediate)"
+                  placeholder="Languages (comma separated or one per line)\nExample: English, Hindi, Marathi"
                   value={languages}
                   onChange={(e) => setLanguages(e.target.value)}
                   className="min-h-[140px]"
                 />
+                
+                {languages.trim() && (
+                  <div className="rounded-md border p-4 bg-muted/10 space-y-3 mt-2">
+                    <p className="text-sm font-medium">Evaluate Languages</p>
+                    <div className="grid gap-2">
+                      {Array.from(new Set(languages.split(/[\n,]/).map(s => s.trim()).filter(Boolean))).map(lang => (
+                        <div key={lang} className="flex flex-wrap sm:flex-nowrap items-center justify-between gap-3 p-2 border-b last:border-0 border-border/50">
+                          <span className="text-sm truncate font-medium">{lang}</span>
+                          <div className="flex items-center gap-3">
+                            <StarRating 
+                              rating={languagesRatings[lang] || 0} 
+                              onChange={(val) => setLanguagesRatings({...languagesRatings, [lang]: val})} 
+                            />
+                            <span className="text-xs text-muted-foreground w-[68px] text-right">
+                              {languagesRatings[lang] ? ["Beginner", "Basic", "Good", "Very Good", "Excellent"][languagesRatings[lang] - 1] : "Unrated"}
+                            </span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
                 <p className="text-xs text-muted-foreground">Add speaking proficiency if possible for better clarity.</p>
               </CardContent>
             </Card>

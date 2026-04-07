@@ -1,0 +1,3 @@
+digraph { node [shape=box, fontname="Arial"];
+    JSONB [label="resume.data (JSONB)"]; GIN [label="GIN Index"]; Query [label="Faster Filters"];
+    JSONB -> GIN -> Query; }

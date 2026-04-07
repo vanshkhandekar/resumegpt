@@ -234,16 +234,23 @@ def generate_pdf(filepath):
 
 def main():
     os.makedirs('data/Generated_Reports', exist_ok=True)
+    os.makedirs('thesis', exist_ok=True)
     
     print("Generating DOCX files...")
+    # Original paths
     generate_docx('data/Generated_Reports/Student_Thesis_Report.docx')
     generate_docx('data/Generated_Reports/Practical_Project_Report.docx')
+    # Thesis folder paths specifically requested by user
+    generate_docx('thesis/AI_Resume_Studio_Thesis.docx')
     
     print("Generating PDF files (to match exactly)...")
+    # Original paths
     generate_pdf('data/Generated_Reports/Student_Thesis_Report.pdf')
     generate_pdf('data/Generated_Reports/Practical_Project_Report.pdf')
+    # Thesis folder paths specifically requested by user
+    generate_pdf('thesis/AI_Resume_Studio_Thesis.pdf')
     
-    print("All files generated successfully in data/Generated_Reports/")
+    print("All files generated successfully in data/Generated_Reports/ and thesis/")
 
 if __name__ == '__main__':
     main()

@@ -1,0 +1,4 @@
+digraph { node [shape=box, fontname="Arial"];
+    Load [label="High User Traffic"]; Server [label="Supabase Pooled Connections"]; 
+    Edge [label="Vercel Edge Regions"];
+    Load -> Edge -> Server; }

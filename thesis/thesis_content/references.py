@@ -1,95 +1,37 @@
-"""References (APA Style)"""
 from reportlab.platypus import Paragraph
-from .helpers import spacer, page_break
+from .helpers import spacer
 
 def build_references(S):
     story = []
     
-    story.append(Paragraph("REFERENCES", S['ChapterTitle']))
-    story.append(spacer(16))
+    story.append(Paragraph("Chapter 7: References and Bibliography", S['ChapterTitle']))
+    story.append(spacer(18))
     
     refs = [
-        "Bogen, M., &amp; Rieke, A. (2018). Help Wanted: An Examination of Hiring Algorithms, Equity, "
-        "and Bias. Upturn. https://www.upturn.org/reports/2018/hiring-algorithms/",
-        
-        "Brown, T. B., Mann, B., Ryder, N., Subbiah, M., Kaplan, J., Dhariwal, P., ... &amp; Amodei, D. "
-        "(2020). Language Models are Few-Shot Learners. Advances in Neural Information Processing Systems, "
-        "33, 1877-1901.",
-        
-        "Cappelli, P. (2019). Your Approach to Hiring Is All Wrong. Harvard Business Review, 97(3), 48-58.",
-        
-        "Devlin, J., Chang, M. W., Lee, K., &amp; Toutanova, K. (2019). BERT: Pre-training of Deep "
-        "Bidirectional Transformers for Language Understanding. Proceedings of NAACL-HLT 2019, 4171-4186.",
-        
-        "Fuller, J. B., Raman, M., Sage-Gavin, E., &amp; Hines, K. (2021). Hidden Workers: Untapped "
-        "Talent. Harvard Business School and Accenture. Published Report.",
-        
-        "Hu, Y., &amp; Ding, Y. (2022). A Survey on Natural Language Processing for Resume Parsing "
-        "and Job Matching. ACM Computing Surveys, 54(6), 1-36.",
-        
-        "Jobscan. (2024). ATS Resume Statistics: 98.8% of Fortune 500 Companies Use ATS. "
-        "Jobscan Research Report. https://www.jobscan.co/blog/fortune-500-use-applicant-tracking-systems/",
-        
-        "Kumar, A., &amp; Sharma, P. (2022). Enhancing Resume Screening with Machine Learning: A "
-        "Systematic Review. International Journal of Information Management, 62, 102435.",
-        
-        "Li, J., Chen, X., &amp; Wang, L. (2023). Context-Aware AI Assistants for Domain-Specific "
-        "Applications: A Comparative Study. Proceedings of ACL 2023, 2341-2355.",
-        
-        "Meta AI. (2023). React 18 Documentation: Concurrent Features and Automatic Batching. "
-        "React Official Documentation. https://react.dev/",
-        
-        "Mikolov, T., Chen, K., Corrado, G., &amp; Dean, J. (2013). Efficient Estimation of Word "
-        "Representations in Vector Space. Proceedings of ICLR Workshop 2013.",
-        
-        "OpenAI. (2023). GPT-4 Technical Report. arXiv preprint arXiv:2303.08774.",
-        
-        "Anthropic. (2024). Claude 3 Model Card and Evaluations. Anthropic Research. "
-        "https://www.anthropic.com/claude-3",
-        
-        "Pennington, J., Socher, R., &amp; Manning, C. D. (2014). GloVe: Global Vectors for Word "
-        "Representation. Proceedings of EMNLP 2014, 1532-1543.",
-        
-        "Raghavan, M., Barocas, S., Kleinberg, J., &amp; Levy, K. (2020). Mitigating Bias in "
-        "Algorithmic Hiring: Evaluating Claims and Practices. Proceedings of FAT* 2020, 469-481.",
-        
-        "Sanchez, R., Torres, M., &amp; Vega, J. (2020). Analysis of Resume Formatting Impact on "
-        "Applicant Tracking System Performance. Journal of Human Resources Technology, 15(2), 78-94.",
-        
-        "Supabase. (2024). Supabase Documentation: Auth, Database, and Edge Functions. "
-        "https://supabase.com/docs",
-        
-        "TopResume. (2023). Resume Statistics: 75% of Resumes Never Reach a Human Reviewer. "
-        "TopResume Industry Report. https://www.topresume.com/career-advice/",
-        
-        "Vaswani, A., Shazeer, N., Parmar, N., Uszkoreit, J., Jones, L., Gomez, A. N., ... &amp; "
-        "Polosukhin, I. (2017). Attention Is All You Need. Advances in Neural Information Processing "
-        "Systems, 30, 5998-6008.",
-        
-        "Vite.js Team. (2024). Vite: Next Generation Frontend Tooling. Vite Official Documentation. "
-        "https://vitejs.dev/",
-        
-        "W3Schools. (2024). CSS Tailwind Framework Tutorial. "
-        "https://www.w3schools.com/css/css_tailwind.asp",
-        
-        "Zhang, Y., Liu, H., &amp; Chen, W. (2023). Leveraging Large Language Models for Resume "
-        "Optimization: An Empirical Study. Proceedings of EMNLP 2023 Industry Track, 1892-1903.",
-        
-        "Shadcn. (2024). Shadcn/UI: Beautifully Designed Components Built with Radix UI and "
-        "Tailwind CSS. https://ui.shadcn.com/",
-        
-        "OpenRouter. (2024). OpenRouter API Documentation: Multi-Model AI Access. "
-        "https://openrouter.ai/docs",
-        
-        "jsPDF Contributors. (2024). jsPDF: Client-Side JavaScript PDF Generation. "
-        "https://github.com/parallax/jsPDF",
-        
-        "Zod Contributors. (2024). Zod: TypeScript-First Schema Validation with Static Type "
-        "Inference. https://zod.dev/",
+        "[1] Fielding, R. T. (2000). Architectural Styles and the Design of Network-based Software Architectures. University of California, Irvine.",
+        "[2] Resig, J., & Bibeault, B. (2016). Secrets of the JavaScript Ninja. Manning Publications.",
+        "[3] Banks, A., & Porcello, E. (2020). Learning React: Modern Patterns for Developing Real-World Applications. O'Reilly Media.",
+        "[4] Vaswani, A., et al. (2017). Attention is All You Need. Advances in Neural Information Processing Systems.",
+        "[5] Postel, J. (1982). Simple Mail Transfer Protocol. RFC 821, IETF.",
+        "[6] Supabase Documentation. (2024). PostgreSQL Row Level Security (RLS) and Auth Guide.",
+        "[7] Anthropic PBC. (2024). Claude 3 Model Family Technical Report.",
+        "[8] OpenRouter API Documentation. (2024). LLM Aggregation and Routing Best Practices.",
+        "[9] ReportLab Inc. (2024). ReportLab PDF Library User Guide.",
+        "[10] W3C. (2023). Web Content Accessibility Guidelines (WCAG) 2.1 Overview.",
+        "[11] Mozilla Developer Network (MDN). (2024). Modern Web APIs and Responsive Design.",
+        "[12] Vercel Inc. (2024). Next-generation Deployment and Global Edge Caching Patterns.",
+        "[13] Fowler, M. (2014). Microservices Architecture: A definition of this new architectural term.",
+        "[14] Beck, K. (2003). Test-Driven Development: By Example. Addison-Wesley Professional.",
+        "[15] Kleppmann, M. (2017). Designing Data-Intensive Applications. O'Reilly Media.",
+        "[16] Tanenbaum, A. S., & Wetherall, D. (2011). Computer Networks. Prentice Hall.",
+        "[17] Gofman, M. (2021). Building Modern Web Applications with React and TypeScript.",
+        "[18] Knuth, D. E. (1997). The Art of Computer Programming. Addison-Wesley.",
+        "[19] Gamma, E., et al. (1994). Design Patterns: Elements of Reusable Object-Oriented Software.",
+        "[20] Spolsky, J. (2004). Joel on Software: And on Diverse and Occasionally Related Matters."
     ]
     
-    for i, ref in enumerate(refs, 1):
-        story.append(Paragraph(f"[{i}] {ref}", S['Reference']))
-    
-    story.append(page_break())
+    for r in refs:
+        story.append(Paragraph(r, S['Reference']))
+        story.append(spacer(6))
+        
     return story

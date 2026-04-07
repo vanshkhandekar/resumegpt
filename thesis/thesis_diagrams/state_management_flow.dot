@@ -1,0 +1,3 @@
+digraph { rankdir=TB; node [shape=box, fontname="Arial"];
+    State [label="React 'resume' State"]; Hook [label="useAutoSave Hook"]; API [label="Supabase Client"];
+    State -> Hook [label="Mutation"]; Hook -> API [label="UPSERT after 10s"]; }

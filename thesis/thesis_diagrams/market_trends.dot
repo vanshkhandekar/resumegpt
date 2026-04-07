@@ -1,0 +1,4 @@
+digraph { rankdir=TB; node [shape=box, fontname="Arial"];
+    Trend1 [label="AI in Recruitment (90%+)"]; Trend2 [label="Self-Service Career Platforms"];
+    Trend3 [label="ATS-Centric Content Writing"];
+    Trend1 -> Trend2 -> Trend3; }

@@ -4,6 +4,7 @@ import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { Separator } from "@/components/ui/separator";
 import { AppSidebar } from "@/components/app/AppSidebar";
 import { FloatingAiAssistant } from "@/components/ai/FloatingAiAssistant";
+import { Github, MessageCircle } from "lucide-react";
 import { ModeToggle } from "@/components/theme/ModeToggle";
 
 export function DashboardLayout() {
@@ -22,6 +23,13 @@ export function DashboardLayout() {
             </Link>
             <span className="hidden text-sm text-muted-foreground sm:inline">- AI Resume Builder</span>
             <div className="ml-auto flex items-center gap-2">
+              <a href="https://github.com/vanshkhandekar" target="_blank" className="p-2 text-muted-foreground hover:text-foreground hidden sm:block">
+                <Github className="h-5 w-5" />
+              </a>
+              <a href="https://t.me/cyberfranky_bio" target="_blank" className="flex items-center gap-1 px-3 py-1.5 text-sm font-medium text-blue-500 hover:bg-blue-500/10 rounded-lg">
+                <MessageCircle className="h-4 w-4" />
+                <span className="hidden sm:inline">Support</span>
+              </a>
               <ModeToggle />
             </div>
           </header>

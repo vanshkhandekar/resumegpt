@@ -1,0 +1,3 @@
+digraph { rankdir=LR; node [shape=box, fontname="Arial"];
+    R1 [label="Multi-User Collab"]; R2 [label="Direct Job Apply"]; R3 [label="Interview Simulator"];
+    R1 -> R2 -> R3; }

@@ -1,0 +1,6 @@
+digraph { rankdir=LR; node [shape=box, style=filled, fontname="Arial"];
+    P [label="Manual Resume Creation", fillcolor="#fee2e2"];
+    A [label="ATS Filtering Algorithms", fillcolor="#fef3c7"];
+    R [label="High Rejection Rate (75%+)", fillcolor="#fecaca"];
+    S [label="AI Resume Studio", fillcolor="#dcfce7", style="bold,filled"];
+    P -> A -> R; R -> S [label="Solution"]; }

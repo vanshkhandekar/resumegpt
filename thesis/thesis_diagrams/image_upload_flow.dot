@@ -1,0 +1,3 @@
+digraph { node [shape=box, fontname="Arial"];
+    Browse [label="Select Photo"]; Resize [label="Base64 / Canvas Resize"]; Store [label="Local State"];
+    Browse -> Resize -> Store -> PDFExport; }

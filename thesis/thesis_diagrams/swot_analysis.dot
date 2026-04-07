@@ -1,0 +1,7 @@
+digraph { node [shape=record, fontname="Arial"];
+    SWOT [label="{Strengths|AI Integration
+ATS Scoring
+Real-time Preview}|{Weaknesses|API Costs
+Dependency on OpenRouter}|{Opportunities|SaaS Subscription
+Institutional Hiring}|{Threats|Large Competitors (Canva)
+Changing ATS Rules}"]; }

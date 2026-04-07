@@ -1,0 +1,3 @@
+digraph { node [shape=cylinder, fontname="Arial"];
+    Context [label="System Prompt +\nResume JSON +\nUser Query"]; LLM [label="Claude 3"];
+    Context -> LLM; LLM -> Response; }

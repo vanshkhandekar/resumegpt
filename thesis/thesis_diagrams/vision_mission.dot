@@ -1,0 +1,5 @@
+digraph { node [shape=box, style=filled, fontname="Arial"];
+    Vision [label="Vision: Democratize AI-powered
+Career Tools for everyone", fillcolor="#dbeafe"];
+    Mission [label="Mission: Simplify resume building
+using LLMs and modern web tech", fillcolor="#f0fdf4"]; }

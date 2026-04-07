@@ -1,0 +1,3 @@
+digraph { rankdir=BT; node [shape=box, fontname="Arial"];
+    HTTPS [label="SSL/TLS"]; JWT [label="JWT Auth"]; RLS [label="Postgres RLS Policies"]; App [label="Secure App"];
+    HTTPS -> JWT -> RLS -> App; }

@@ -166,34 +166,58 @@ export function FloatingAiAssistant({ context, enabled = true }: FloatingAiAssis
     const userText = input.trim();
     if (!userText) return;
     setMessages((prev) => [...prev, { role: "user", content: userText }]);
+    setInput("");
 
-    const systemPrompt = `You are a highly intelligent, friendly, and adaptive AI assistant integrated inside a Resume Builder platform.
+    const systemPrompt = `You are a human-like AI assistant inside a Resume Builder app.
 
-Your personality:
-- Talk like a real human, not robotic.
-- Be friendly, chill, and conversational when the user is casual.
-- Be professional, structured, and helpful when the user asks about resume, jobs, career, ATS, or interviews.
-- You can switch tone automatically based on user message.
+CRITICAL RULE:
+You must NEVER sound like an AI. You must sound like a real person chatting naturally.
 
-Conversation modes:
-1. Casual Mode: Friendly, fun, engaging. (Use simple Hinglish or English depending on user).
-   Example: User "bhai kya chal raha hai" -> AI "Bas mast 😄 tu bata kya scene hai?"
-2. Resume / Career Mode: Structured, professional, useful, bullet points when needed.
+PERSONALITY:
+- Talk like a friendly Indian user (Hinglish allowed)
+- Be chill, casual, and natural
+- Use emotions, small reactions, and conversational fillers (like: "arey", "bhai", "acha", "hmm", "sahi hai", "got it")
+- Keep responses SHORT unless user asks for detail
+- Avoid robotic, formal, or structured replies unless required
 
-Special Handling for Skills & Languages:
-- Help users add Skills and Languages along with their proficiency level in a smart and user-friendly way.
-- Ask them about their proficiency: Beginner/Average, Intermediate/Good, Advanced/Excellent (or star ratings).
-- Suggest level automatically based on context if possible.
-- Convert skills into an ATS-friendly format. Example: "Python (Advanced)".
-- Suggest improvements and missing skills for their role.
-- If they are confused, give them a conversational prompt to determine their level (like: "Bhai honestly bata, tu kitna comfortable hai isme 😄 Daily use karta hai → Advanced, Thoda bahut aata hai → Intermediate, Bas basics pata hai → Beginner").
+TONE SWITCHING (VERY IMPORTANT):
 
-General Rules:
-- Automatically detect user intent.
-- Respond naturally to ANY topic. Don't restrict yourself only to resumes.
-- Always try to add value (like ChatGPT premium level).
-- Tone matches user (Hinglish -> Reply Hinglish, English -> Reply English).
-- Never sound confused. Always guide the user clearly.`;
+1. Casual Conversation Mode:
+If user says anything normal like "hello", "kya kar raha hai", "kaisa hai"
+Response style: Friendly, human, chill
+Example: "Bas mast 😄 tu bata kya scene hai?"
+
+2. Resume / Career Mode:
+If user asks about resume, jobs, ATS, skills
+Switch tone slightly professional BUT still human.
+Example: "Achha resume bana lete hain 💼 Tu fresher hai ya experience hai?"
+
+3. Mixed Mode:
+If user mixes both like "Bhai resume bana de na"
+Response: "Ha bhai bana dete hain 😄 Kis role ke liye chahiye?"
+
+ANTI-AI RULES (MOST IMPORTANT):
+- NEVER say "As an AI...", "I can help you with...", "Here are the steps..."
+- NEVER sound robotic or give lecture-style answers
+- NEVER use too much structure unless necessary
+- INSTEAD: Talk like WhatsApp chat, use short lines, ask questions back, keep flow natural
+
+SMART BEHAVIOR:
+- If user unclear: "Thoda clear bata na bhai 😅"
+- If user stuck: "Chal main help karta hu, tension mat le"
+- If resume needed: Ask 2-3 quick questions instead of dumping info
+
+MEMORY STYLE:
+- Refer previous messages if possible
+- Feel like ongoing chat, not new answer every time
+
+EXAMPLES (STRICTLY FOLLOW STYLE):
+User: "kya kar raha hai" → AI: "Bas yaar chill 😄 tu bata kya chal raha hai?"
+User: "resume bana" → AI: "Chal bana dete hain 💼 Kis role ke liye chahiye?"
+User: "python add karu?" → AI: "Haan kar sakta hai 👍 Kitna aata hai tujhe — basic ya strong?"
+User: "thanks" → AI: "Anytime bhai 😄"
+
+FINAL GOAL: User should feel like chatting with a smart friend, NOT a tool.`;
 
     const sanitize = (raw: string) => {
       return String(raw || "").trim();
@@ -203,15 +227,21 @@ General Rules:
       const activeKey = getActiveApiKey();
       let aiText = "";
 
-      // Direct call to OpenRouter / Claude Opus
+      // Build full conversation history for context
+      const chatHistory = messages.map((m) => ({
+        role: m.role === "ai" ? "assistant" as const : "user" as const,
+        content: m.content,
+      }));
+
       const payload = {
         model: "anthropic/claude-3-opus",
         messages: [
-          { role: "system", content: systemPrompt },
-          { role: "user", content: `Context: ${context || "None"}\n\nQuery: ${userText}` }
+          { role: "system" as const, content: systemPrompt },
+          ...chatHistory,
+          { role: "user" as const, content: userText }
         ],
-        max_tokens: 150,
-        temperature: 0.5,
+        max_tokens: 300,
+        temperature: 0.8,
       };
 
       try {
@@ -231,30 +261,43 @@ General Rules:
         }
 
         const data = await response.json();
-        aiText = sanitize(data.choices?.[0]?.message?.content || "No response generated.");
+        aiText = sanitize(data.choices?.[0]?.message?.content || "Arey yaar kuch dikkat aa gayi 😅 ek baar phir try kar");
       } catch (err) {
-        console.warn("AI Assistant API failed, using intelligent mock fallback:", err);
+        console.warn("AI Assistant API failed, using fallback:", err);
         const resumeKeywords = /\b(resume|cv|summary|experience|project|skills|education|achievement|certification|internship|job|role|bullet|description|profile|work|career|qualification|objective|professional|action|verb)\b/i;
+        const casualKeywords = /\b(hi|hello|hey|kya|kaise|kaisa|bhai|yaar|bro|sup|thanks|thankyou|haan|nahi|ok|theek|chal)\b/i;
         const isResumeRelated = resumeKeywords.test(userText.toLowerCase());
+        const isCasual = casualKeywords.test(userText.toLowerCase());
 
-        if (isResumeRelated) {
-          aiText = sanitize(
-            "Bhai resume me hamesha strong action verbs (jaise 'Developed' ya 'Managed') use karo. Aur numbers/metrics zaroor include karo (e.g. 'improved by 20%'). Kuch aur help chahiye?"
-          );
+        if (isCasual && !isResumeRelated) {
+          const casualReplies = [
+            "Bas yaar mast 😄 tu bata kya chal rha?",
+            "Arey bhai! Bol na kya scene hai 😎",
+            "Haan bhai sun rha hu, bol! 👋",
+            "Kya baat hai bro, kaise ho? 😄",
+            "Anytime bhai 😄 kuch aur chahiye toh bol",
+          ];
+          aiText = casualReplies[Math.floor(Math.random() * casualReplies.length)];
+        } else if (isResumeRelated) {
+          const resumeReplies = [
+            "Chal resume pe kaam karte hain 💼 Bata kis role ke liye chahiye?",
+            "Resume me strong action verbs use kar bhai — like 'Developed', 'Managed'. Aur numbers daal 📊",
+            "Achha bata — fresher hai ya experience hai? Usse template decide hoga 👍",
+          ];
+          aiText = resumeReplies[Math.floor(Math.random() * resumeReplies.length)];
         } else {
-          aiText = sanitize("Yaar abhi external AI service me thoda delay hai. Koi baat nahi, aap apna sawal puchho main yahi help karunga! 😄");
+          aiText = "Yaar abhi network me thoda issue hai 😅 Ek baar phir try kar, main yahi hu!";
         }
       }
 
       setMessages((prev) => [...prev, { role: "ai", content: aiText }]);
       bumpAiUsageMetric();
-      setInput("");
     } catch (err) {
       console.error("AI error:", err);
       toast({
         variant: "destructive",
-        title: "AI Error",
-        description: "Failed to connect to Claude 4.6 via OpenRouter. Please check the API key limits.",
+        title: "Oops!",
+        description: "AI se connect nahi ho paya. API key check karo admin panel me.",
       });
     } finally {
       setLoading(false);
@@ -277,7 +320,7 @@ General Rules:
           size="icon"
           aria-label={open ? "Close AI assistant" : "Open AI assistant"}
         >
-          {open ? <X className="h-5 w-5" /> : <MessageCircle className="h-6 w-6 stroke-[1.5]" />}
+          {open ? <X className="h-5 w-5" /> : <Sparkles className="h-6 w-6 stroke-[1.5]" />}
         </Button>
       </div>
 
@@ -292,7 +335,7 @@ General Rules:
                 <div className="relative h-11 w-11 flex items-center justify-center">
                   <div className="absolute inset-0 bg-blue-500 rounded-full opacity-10 animate-pulse" />
                   <div className="relative h-10 w-10 bg-[#3b82f6] rounded-full shadow-md flex items-center justify-center transition-transform hover:scale-105">
-                    <MessageCircle className="h-5 w-5 text-white stroke-[1.5]" />
+                    <Sparkles className="h-5 w-5 text-white stroke-[1.5]" />
                     <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-emerald-400 border-2 border-white dark:border-slate-900 rounded-full" />
                   </div>
                 </div>
@@ -322,7 +365,7 @@ General Rules:
             </div>
             <div
               ref={chatContainerRef}
-              className="chat-scroll relative flex-1 overflow-y-auto pr-2 pb-20 cursor-grab"
+              className="chat-scroll relative flex-1 overflow-y-auto p-4 cursor-grab"
               onMouseDown={handleMouseDown}
               onMouseMove={handleMouseMove}
               onMouseUp={handleMouseUp}
@@ -343,42 +386,45 @@ General Rules:
                 ))}
                 {loading && (
                   <div className="flex justify-start">
-                    <div className="typing-bubble">
+                    <div className="typing-bubble mt-2">
                       <span className="typing-dot" />
                       <span className="typing-dot" />
                       <span className="typing-dot" />
                     </div>
                   </div>
                 )}
-                <div ref={endRef} />
+                <div ref={endRef} className="h-2" />
               </div>
             </div>
-            <div className="sticky bottom-0 mt-3 rounded-full border border-slate-200 bg-white px-2 py-1 shadow-sm">
-              <div className="flex items-end gap-2">
-                <Button size="icon" variant="ghost" className="h-9 w-9 rounded-full text-slate-500">
-                  <Camera className="h-4 w-4" />
-                </Button>
-                <Textarea
-                  placeholder={placeholder}
-                  value={input}
-                  onChange={(e) => setInput(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter" && !e.shiftKey) {
-                      e.preventDefault();
-                      handleSend();
-                    }
-                  }}
-                  className="min-h-[36px] max-h-20 flex-1 resize-none border-0 bg-transparent p-2 text-sm text-slate-900 placeholder:text-slate-400 focus-visible:ring-0"
-                />
-                <Button size="icon" variant="ghost" className="h-9 w-9 rounded-full text-slate-500">
-                  <Mic className="h-4 w-4" />
-                </Button>
-                <Button onClick={handleSend} disabled={!enabled || loading} size="icon" className="h-9 w-9 rounded-full bg-blue-600 text-white hover:bg-blue-700">
-                  <Send className="h-4 w-4" />
-                </Button>
-                <Button size="icon" variant="ghost" className="h-9 w-9 rounded-full text-slate-500">
-                  <Plus className="h-4 w-4" />
-                </Button>
+            
+            <div className="relative shrink-0 p-3 pt-0">
+              <div className="rounded-[1.5rem] border border-slate-200/80 dark:border-slate-700/80 bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl px-2 py-1.5 shadow-[0_-4px_24px_-12px_rgba(0,0,0,0.1)]">
+                <div className="flex items-end gap-2">
+                  <Button size="icon" variant="ghost" className="h-9 w-9 rounded-full text-slate-500 hover:text-slate-700 transition-colors">
+                    <Camera className="h-4 w-4" />
+                  </Button>
+                  <Textarea
+                    placeholder={placeholder}
+                    value={input}
+                    onChange={(e) => setInput(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" && !e.shiftKey) {
+                        e.preventDefault();
+                        handleSend();
+                      }
+                    }}
+                    className="min-h-[36px] max-h-24 flex-1 resize-none border-0 bg-transparent p-2 text-[13px] leading-relaxed text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus-visible:ring-0"
+                  />
+                  <Button size="icon" variant="ghost" className="h-9 w-9 rounded-full text-slate-500 hover:text-slate-700 transition-colors">
+                    <Mic className="h-4 w-4" />
+                  </Button>
+                  <Button onClick={handleSend} disabled={!enabled || loading} size="icon" className="h-9 w-9 rounded-full bg-[#3b82f6] hover:bg-[#2563eb] text-white transition-all hover:scale-105 shadow-md">
+                    <Send className="h-4 w-4" />
+                  </Button>
+                  <Button size="icon" variant="ghost" className="h-9 w-9 rounded-full text-slate-500 hover:text-slate-700 transition-colors">
+                    <Plus className="h-4 w-4" />
+                  </Button>
+                </div>
               </div>
             </div>
           </CardContent>

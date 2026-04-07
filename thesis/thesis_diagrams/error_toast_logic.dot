@@ -1,0 +1,3 @@
+digraph { node [shape=box, fontname="Arial"];
+    Fail [label="API Call Fails"]; Catch [label="Try-Catch Block"]; Toast [label="Sonner/Shadcn Toast"];
+    Fail -> Catch -> Toast; }

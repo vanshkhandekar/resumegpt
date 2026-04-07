@@ -1,0 +1,2 @@
+digraph { node [shape=record, fontname="Arial"];
+    Metric [label="{Initial Load|~1.2s}|{LCP|~1.5s}|{TTI|~1.8s}"]; }

@@ -1,0 +1,1 @@
+digraph { Login -> Supabase -> JWT -> Protected; }

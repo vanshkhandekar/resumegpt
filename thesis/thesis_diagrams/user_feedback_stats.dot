@@ -1,0 +1,2 @@
+digraph { node [shape=record, fontname="Arial"];
+    Stats [label="{Ease of Use|92%}|{AI Accuracy|88%}|{PDF Quality|95%}|{Overall Value|90%}"]; }

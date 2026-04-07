@@ -1,0 +1,3 @@
+digraph { rankdir=LR; node [shape=circle, style=filled, fillcolor="#f0fdf4", fontname="Arial"];
+    P [label="Plan"]; D [label="Design"]; C [label="Code"]; T [label="Test"]; R [label="Review"];
+    P -> D -> C -> T -> R -> P; }

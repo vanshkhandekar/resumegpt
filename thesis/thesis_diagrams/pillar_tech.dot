@@ -1,0 +1,4 @@
+digraph { rankdir=BT; node [shape=box, style=filled, fontname="Arial"];
+    UI [label="React & Tailwind", fillcolor="#dbeafe"]; DB [label="Supabase & Postgres", fillcolor="#dcfce7"];
+    GenAI [label="Claude 3 via OpenRouter", fillcolor="#fef3c7"]; Platform [label="AI Resume Studio", shape=ellipse];
+    UI -> Platform; DB -> Platform; GenAI -> Platform; }

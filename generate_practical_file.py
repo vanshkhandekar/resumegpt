@@ -1,259 +1,172 @@
 import os
+import textwrap
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.units import inch
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib.enums import TA_CENTER, TA_JUSTIFY, TA_LEFT
-from reportlab.lib.colors import HexColor, black
+from reportlab.lib.colors import HexColor, black, white
 from reportlab.platypus import (
-    SimpleDocTemplate, Paragraph, Spacer, PageBreak, Table, TableStyle, Image, Flowable, KeepTogether
+    SimpleDocTemplate, Paragraph, Spacer, PageBreak, Table, TableStyle, Image, Preformatted, KeepTogether
 )
-
-import datetime
+from PIL import Image as PILImage
 
 # --- CONFIGURATION ---
-FONT_NAME = "Times-Roman"
-FONT_BOLD = "Times-Bold"
-FONT_ITALIC = "Times-Italic"
-FONT_BI = "Times-BoldItalic"
-
 STUDENT_NAME = "Vansh Khandekar"
-PRN_NO = "NMXXXXX"
-ROLL_NO = "M0XXX"
-BATCH = "2024 - 2026"
-INSTITUTE = "SVKM's NMIMS, INDORE"
+INSTITUTE = "Janaprabha Institute of Engineering and Technology, Ramtek"
 COURSE = "Master of Computer Applications (MCA) Semester - I"
-SUBJECT = "Web Technologies"
-
-PRACTICALS_DIR = "data"
+SUBJECT = "Advance Web Technologies"
+BATCH = "2025 - 2026"
 OUTPUT_FILE = "Practical_File.pdf"
-# ---------------------
+
+THESIS_DIR = os.path.join(os.getcwd(), "thesis")
+DIAG_DIR = os.path.join(THESIS_DIR, "thesis_diagrams")
+SCREENSHOTS_DIR = os.path.join(os.getcwd(), "public/screenshots")
 
 def get_styles():
     styles = getSampleStyleSheet()
-    styles.add(ParagraphStyle('CoverTitle', fontName=FONT_BOLD, fontSize=36, leading=40, alignment=TA_CENTER, spaceAfter=20))
-    styles.add(ParagraphStyle('CoverSub', fontName=FONT_NAME, fontSize=18, leading=24, alignment=TA_CENTER, spaceAfter=10))
-    styles.add(ParagraphStyle('CoverBold', fontName=FONT_BOLD, fontSize=16, leading=22, alignment=TA_CENTER, spaceAfter=8))
-    styles.add(ParagraphStyle('CoverNormal', fontName=FONT_NAME, fontSize=16, leading=22, alignment=TA_CENTER, spaceAfter=8))
-    
-    styles.add(ParagraphStyle('Heading', fontName=FONT_BOLD, fontSize=24, leading=28, alignment=TA_CENTER, spaceAfter=20))
-    styles.add(ParagraphStyle('Body', fontName=FONT_NAME, fontSize=14, leading=20, alignment=TA_JUSTIFY, spaceAfter=12))
-    styles.add(ParagraphStyle('BodyLeft', fontName=FONT_NAME, fontSize=14, leading=20, alignment=TA_LEFT, spaceAfter=12))
-    styles.add(ParagraphStyle('BodyBoldLeft', fontName=FONT_BOLD, fontSize=14, leading=20, alignment=TA_LEFT, spaceAfter=12))
-    
-    styles.add(ParagraphStyle('PracticalTitle', fontName=FONT_BOLD, fontSize=28, leading=32, alignment=TA_CENTER, spaceAfter=20))
-    styles.add(ParagraphStyle('PracticalSection', fontName=FONT_BOLD, fontSize=18, leading=24, alignment=TA_LEFT, spaceAfter=10, spaceBefore=15))
+    styles.add(ParagraphStyle('CoverTitle', fontName='Times-Bold', fontSize=28, leading=34, alignment=TA_CENTER, spaceAfter=20))
+    styles.add(ParagraphStyle('CoverNormal', fontName='Times-Roman', fontSize=16, leading=22, alignment=TA_CENTER, spaceAfter=8))
+    styles.add(ParagraphStyle('Heading', fontName='Times-Bold', fontSize=22, leading=26, alignment=TA_CENTER, spaceAfter=20))
+    styles.add(ParagraphStyle('SubHeading', fontName='Times-Bold', fontSize=16, leading=20, alignment=TA_LEFT, spaceAfter=10))
+    styles.add(ParagraphStyle('Body', fontName='Times-Roman', fontSize=12, leading=16, alignment=TA_JUSTIFY, spaceAfter=10))
+    styles.add(ParagraphStyle('CodeBlock', fontName='Courier', fontSize=11, leading=14, spaceAfter=12, leftIndent=20, backColor=HexColor('#fafafa')))
     return styles
 
-def spacer(h):
-    return Spacer(1, h)
+def spacer(h=12): return Spacer(1, h)
 
-# Custom flowable for border
-def add_border(canvas, doc):
-    canvas.saveState()
-    canvas.setStrokeColor(black)
-    canvas.setLineWidth(2)
-    # Draw border with some margin
-    margin = 40
-    canvas.rect(margin, margin, A4[0] - 2*margin, A4[1] - 2*margin)
-    canvas.restoreState()
+def get_code_chunks(file_path, start, end, chunk_size=45):
+    """Reads a file and returns a list of wrapped code blocks."""
+    try:
+        if not os.path.exists(file_path): return [f"// Error: {file_path} not found"]
+        with open(file_path, 'r', encoding='utf-8') as f:
+            lines = f.readlines()
+            snippet = lines[start-1:end]
+            
+            wrapped_snippet = []
+            max_w = 60 # Safer width for 11pt Courier
+            for line in snippet:
+                clean_line = line.replace('\t', '    ').rstrip()
+                if len(clean_line) > max_w:
+                    indent = len(clean_line) - len(clean_line.lstrip())
+                    wrapped = textwrap.fill(clean_line, width=max_w, subsequent_indent=' '*(indent+4))
+                    wrapped_snippet.append(wrapped + '\n')
+                else:
+                    wrapped_snippet.append(clean_line + '\n')
+                    
+            chunks = []
+            for i in range(0, len(wrapped_snippet), chunk_size):
+                chunks.append("".join(wrapped_snippet[i:i+chunk_size]))
+            return chunks
+    except Exception as e: return [f"// Error: {str(e)}"]
+
+def add_img(name_or_path, width=6.0*inch):
+    path = name_or_path
+    if not os.path.exists(path):
+        path = os.path.join(SCREENSHOTS_DIR, name_or_path)
+        if not os.path.exists(path):
+             path = os.path.join(DIAG_DIR, name_or_path + ".png")
+    if not os.path.exists(path): return None
+    try:
+        pil = PILImage.open(path)
+        aspect = pil.size[1] / pil.size[0]
+        height = width * aspect
+        if height > 5.5 * inch:
+            height = 5.5 * inch
+            width = height / aspect
+        return Image(path, width=width, height=height)
+    except: return None
 
 def build_cover(S):
     story = []
-    story.append(spacer(40))
+    story.append(spacer(100))
     story.append(Paragraph("PRACTICAL FILE", S['CoverTitle']))
-    story.append(Paragraph("of", S['CoverSub']))
-    story.append(Paragraph(SUBJECT, S['CoverBold']))
-    story.append(spacer(20))
-    story.append(Paragraph(COURSE, S['CoverNormal']))
-    story.append(Paragraph(f"Batch {BATCH}", S['CoverNormal']))
-    story.append(spacer(60))
-    
-    story.append(Paragraph(f"Name : {STUDENT_NAME}", S['CoverBold']))
-    story.append(Paragraph(f"PRN: {PRN_NO}", S['CoverBold']))
-    story.append(Paragraph(f"Roll No.: {ROLL_NO}", S['CoverBold']))
-    story.append(spacer(80))
-    
-    # Try to add a logo placeholder or actual logo if exists
-    # logo_path = "logo.png"
-    # if os.path.exists(logo_path):
-    #     im = Image(logo_path, width=2*inch, height=2*inch)
-    #     story.append(im)
-    
-    story.append(Paragraph(f"Institute: {INSTITUTE}", S['CoverBold']))
-    story.append(PageBreak())
-    return story
-
-def build_certificate(S):
-    story = []
-    story.append(spacer(60))
-    story.append(Paragraph("Certificate", S['Heading']))
-    story.append(spacer(20))
-    
-    text = (
-        f"This is to certify that Mr/Ms <b>{STUDENT_NAME}</b>, a student of MCA ({BATCH}), "
-        f"has successfully completed the Practical file of <b>{SUBJECT}</b> for Semester I."
-    )
-    story.append(Paragraph(text, S['Body']))
-    story.append(spacer(60))
-    
-    sig_data = [
-        [Paragraph("Submitted To:", S['Body']), Paragraph("Signature of Faculty", S['Body'])]
-    ]
-    t = Table(sig_data, colWidths=[3*inch, 3*inch])
-    t.setStyle(TableStyle([
-        ('ALIGN', (0,0), (-1,-1), 'CENTER'),
-        ('VALIGN', (0,0), (-1,-1), 'BOTTOM'),
-    ]))
-    story.append(t)
-    story.append(PageBreak())
-    return story
-
-def build_declaration(S):
-    story = []
-    story.append(spacer(60))
-    story.append(Paragraph("DECLARATION", S['Heading']))
-    story.append(spacer(20))
-    
-    text = (
-        f"I, <b>{STUDENT_NAME}</b>, hereby declare that the practical file is a record of authentic work "
-        f"carried out by me during the academic year {BATCH} for the subject <b>{SUBJECT}</b>. "
-        f"The matter embodied in this document has not been submitted earlier for the award of any "
-        f"degree or diploma to the best of my knowledge and belief."
-    )
-    story.append(Paragraph(text, S['Body']))
+    story.append(Paragraph(SUBJECT, S['CoverTitle']))
     story.append(spacer(50))
-    
-    sig_data = [
-        [Paragraph(f"Name: {STUDENT_NAME}", S['BodyLeft']), Paragraph("Student Signature", S['BodyLeft'])]
-    ]
-    t = Table(sig_data, colWidths=[3*inch, 3*inch])
-    story.append(t)
+    story.append(Paragraph(f"<b>Student Name:</b> {STUDENT_NAME}", S['CoverNormal']))
+    story.append(Paragraph(f"<b>Course:</b> {COURSE}", S['CoverNormal']))
+    story.append(Paragraph(f"<b>{INSTITUTE}</b>", S['CoverNormal']))
+    story.append(Paragraph(f"<b>Academic Year:</b> {BATCH}", S['CoverNormal']))
     story.append(PageBreak())
-    return story
-
-def build_acknowledgment(S):
-    story = []
-    story.append(spacer(60))
-    story.append(Paragraph("ACKNOWLEDGMENT", S['Heading']))
-    story.append(spacer(20))
-    
-    text = (
-        "I would like to express my special thanks of gratitude to my teacher who gave me the golden "
-        f"opportunity to do this wonderful practical file on the subject <b>{SUBJECT}</b>, which also helped "
-        "me in doing a lot of Research and I came to know about so many new things. I am really thankful to them."
-    )
-    story.append(Paragraph(text, S['Body']))
-    story.append(spacer(50))
-    story.append(Paragraph(f"<b>{STUDENT_NAME}</b>", S['BodyLeft']))
-    story.append(PageBreak())
-    return story
-
-def build_practicals(S):
-    story = []
-    practicals = []
-    
-    if os.path.exists(PRACTICALS_DIR):
-        folders = sorted([f for f in os.listdir(PRACTICALS_DIR) if os.path.isdir(os.path.join(PRACTICALS_DIR, f))])
-        for idx, folder in enumerate(folders, 1):
-            base = os.path.join(PRACTICALS_DIR, folder)
-            
-            # Read Aim
-            aim_txt = ""
-            aim_path = os.path.join(base, "aim.txt")
-            if os.path.exists(aim_path):
-                with open(aim_path, 'r', encoding='utf-8') as f:
-                    aim_txt = f.read().strip()
-            if not aim_txt:
-                aim_txt = "Aim of the practical."
-                
-            # Process practical
-            practicals.append({
-                "no": idx,
-                "title": folder.split('_', 1)[-1] if '_' in folder else folder,
-                "aim": aim_txt,
-                "input_img": os.path.join(base, "input.png"),
-                "output_img": os.path.join(base, "output.png")
-            })
-
-    # 5. INDEX
-    story.append(spacer(40))
-    story.append(Paragraph("INDEX", S['Heading']))
-    story.append(spacer(20))
-    
-    index_data = [["Sr.No.", "Name of the Practical", "Page No.", "Date", "Sign.", "Remarks"]]
-    for p in practicals:
-        index_data.append([str(p['no']), p['aim'][:50] + "...", "", "", "", ""])
-        
-    t = Table(index_data, colWidths=[0.6*inch, 2.7*inch, 0.8*inch, 0.8*inch, 0.8*inch, 1*inch])
-    t.setStyle(TableStyle([
-        ('BACKGROUND', (0,0), (-1,0), HexColor("#f0f0f0")),
-        ('GRID', (0,0), (-1,-1), 1, black),
-        ('FONTNAME', (0,0), (-1,0), FONT_BOLD),
-        ('ALIGN', (0,0), (-1,-1), 'CENTER'),
-        ('VALIGN', (0,0), (-1,-1), 'MIDDLE'),
-        ('BOTTOMPADDING', (0,0), (-1,0), 12),
-        ('TOPPADDING', (0,0), (-1,0), 12),
-    ]))
-    story.append(t)
-    story.append(PageBreak())
-    
-    # 6. PRACTICAL PAGES
-    for p in practicals:
-        p_story = []
-        p_story.append(spacer(10))
-        p_story.append(Paragraph(p['title'], S['PracticalTitle']))
-        
-        # Aim
-        p_story.append(Paragraph(f"<b>Aim:</b> {p['aim']}", S['BodyLeft']))
-        p_story.append(spacer(6))
-        
-        # Input
-        p_story.append(Paragraph("The Input (Source Code HTML Page):", S['PracticalSection']))
-        input_path = p['input_img'] if os.path.exists(p['input_img']) else p['input_img'].replace('.png', '.jpg')
-        if os.path.exists(input_path):
-            img = Image(input_path, width=5.8*inch, height=3.2*inch, kind='proportional')
-            p_story.append(img)
-        else:
-            p_story.append(Paragraph(f"<i>[Please place input.png in {os.path.dirname(input_path)}]</i>", S['Body']))
-        
-        p_story.append(spacer(10))
-        
-        # Output
-        p_story.append(Paragraph("The Output HTML Page:", S['PracticalSection']))
-        output_path = p['output_img'] if os.path.exists(p['output_img']) else p['output_img'].replace('.png', '.jpg')
-        if os.path.exists(output_path):
-            img = Image(output_path, width=5.8*inch, height=3.2*inch, kind='proportional')
-            p_story.append(img)
-        else:
-            p_story.append(Paragraph(f"<i>[Please place output.png in {os.path.dirname(output_path)}]</i>", S['Body']))
-            
-        story.append(KeepTogether(p_story))
-        story.append(PageBreak())
-
     return story
 
 def main():
-    doc = SimpleDocTemplate(
-        OUTPUT_FILE, pagesize=A4,
-        leftMargin=inch, rightMargin=inch,
-        topMargin=inch, bottomMargin=inch,
-        title="Web Technologies Practical File"
-    )
+    doc = SimpleDocTemplate(OUTPUT_FILE, pagesize=A4, leftMargin=0.75*inch, rightMargin=0.75*inch)
     S = get_styles()
     story = []
-    
     story += build_cover(S)
-    story += build_certificate(S)
-    story += build_declaration(S)
-    story += build_acknowledgment(S)
-    story += build_practicals(S)
-    
+
+    practicals = [
+        {"id": 1, "aim": "To implement a professional landing page using React and Framer Motion.", "code": ("src/pages/landing/LandingHero.tsx", 1, 500), "img": "real_landing.png"},
+        {"id": 2, "aim": "To design a secure relational schema in PostgreSQL (Supabase) and define TypeScript interfaces.", "code": ("src/integrations/supabase/types.ts", 1, 600), "img": "detailed_er"},
+        {"id": 3, "aim": "To develop a state-driven resume builder with dynamic section management.", "code": ("src/pages/dashboard/ResumeBuilder.tsx", 1, 700), "img": "real_builder.png"},
+        {"id": 4, "aim": "To integrate Claude-3 Opus via OpenRouter API and implement system prompts for AI content generation.", "code": ("src/pages/Prompt.tsx", 1, 500), "img": "ai_sequence"},
+        {"id": 5, "aim": "To implement a rule-based engine for evaluating keyword density and ATS scores.", "code": ("src/pages/dashboard/ResumeScore.tsx", 1, 600), "img": "real_dashboard.png"},
+        {"id": 6, "aim": "To implement a browser-side PDF generation engine with high-fidelity layout rendering.", "code": ("src/pages/dashboard/ExportResume.tsx", 1, 600), "img": "real_templates.png"},
+        {"id": 7, "aim": "To implement a custom React hook for debounced data persistence.", "code": ("src/hooks/useAutoSave.ts", 1, 500), "img": "state_user"},
+        {"id": 8, "aim": "To create an administrative control panel for monitoring platform-wide metrics.", "code": ("src/pages/Admin.tsx", 1, 500), "img": "real_admin.png"},
+        {"id": 9, "aim": "To implement secure JWT-based authentication using Supabase Auth.", "code": ("src/pages/Auth.tsx", 1, 500), "img": "auth_flow"},
+        {"id": 10, "aim": "To design a scalable project architecture with global routing.", "code": ("src/App.tsx", 1, 400), "img": "architecture"},
+        {"id": 11, "aim": "To implement custom business logic hooks for resume management.", "code": ("src/hooks/useResumes.ts", 1, 500), "img": "component_tree"},
+        {"id": 12, "aim": "To implement a custom floating AI assistant with persistent chat history.", "code": ("src/components/ai/FloatingAiAssistant.tsx", 1, 600), "img": "sys_flow_user"},
+        {"id": 13, "aim": "To implement responsive dashboard navigation.", "code": ("src/components/auth/UserMenu.tsx", 1, 400), "img": "sys_flow_admin"},
+        {"id": 14, "aim": "To implement automated resume score improvements UI.", "code": ("src/components/dashboard/ScoreSuggestion.tsx", 1, 400), "img": "dfd_level1"}
+    ]
+
+    # Index
+    story.append(Paragraph("INDEX", S['Heading']))
+    index_data = [["Sr.No.", "Practical Aim", "Date", "Sign."]]
+    for p in practicals:
+        index_data.append([str(p['id']), p['aim'][:90] + "...", "", ""])
+    t = Table(index_data, colWidths=[0.6*inch, 4.0*inch, 1*inch, 1*inch])
+    t.setStyle(TableStyle([('GRID', (0,0), (-1,-1), 1, black), ('ALIGN', (0,0), (-1,-1), 'CENTER'), ('FONTNAME', (0,0), (-1,0), 'Times-Bold')]))
+    story.append(t)
+    story.append(PageBreak())
+
+    # Practicals
+    for p in practicals:
+        story.append(Paragraph(f"Practical No. {p['id']}", S['SubHeading']))
+        story.append(Paragraph(f"<b>Aim:</b> {p['aim']}", S['Body']))
+        
+        story.append(Paragraph("<b>Source Code Implementation:</b>", S['Body']))
+        chunks = get_code_chunks(p['code'][0], p['code'][1], p['code'][2])
+        for chunk in chunks:
+            story.append(Preformatted(chunk, S['CodeBlock']))
+        
+        story.append(Paragraph("<b>Result Output:</b>", S['Body']))
+        img_f = add_img(p['img'])
+        if img_f:
+             story.append(KeepTogether([img_f, Paragraph(f"<i>Figure {p['id']}: Practical System Output</i>", S['Body'])]))
+        story.append(PageBreak())
+
     print(f"Generating PDF: {OUTPUT_FILE}")
-    doc.build(story, onFirstPage=add_border, onLaterPages=add_border)
-    print("Done!")
+    story_copy = list(story)
+    doc.build(story)
+    
+    print(f"Generating DOCX: {OUTPUT_FILE.replace('.pdf', '.docx')}")
+    try:
+        from docx import Document
+        from docx.shared import Pt, Inches
+        docx_doc = Document()
+        for f in story_copy:
+            if isinstance(f, Paragraph):
+                text = f.getPlainText()
+                para = docx_doc.add_paragraph()
+                run = para.add_run(text)
+                if 'Title' in f.style.name: run.bold=True; run.font.size=Pt(18)
+                else: run.font.size=Pt(12)
+            elif isinstance(f, Preformatted):
+                para = docx_doc.add_paragraph()
+                try: t = f.getPlainText()
+                except: t = str(f)
+                run = para.add_run(t)
+                run.font.name = 'Courier New'
+                run.font.size = Pt(8.5)
+            elif isinstance(f, Image):
+                try: docx_doc.add_picture(f.filename, width=Inches(6.0))
+                except: pass
+            elif isinstance(f, PageBreak): docx_doc.add_page_break()
+        docx_doc.save(OUTPUT_FILE.replace('.pdf', '.docx'))
+    except Exception as e: print(f"DOCX Failed: {e}")
 
 if __name__ == "__main__":
-    if not os.path.exists(PRACTICALS_DIR):
-        os.makedirs(PRACTICALS_DIR)
-        print(f"Created '{PRACTICALS_DIR}' directory. Please add folders for practicals with 'aim.txt', 'input.png' and 'output.png'.")
     main()

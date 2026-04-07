@@ -1,0 +1,4 @@
+digraph { rankdir=BT; node [shape=box, style=filled, fillcolor="#eff6ff", fontname="Arial"];
+    Req [label="Requirement Analysis"]; Design [label="System Design"]; Code [label="Frontend/Backend Coding"];
+    UT [label="Unit Testing"]; IT [label="Integration Testing"]; ST [label="System Testing"]; 
+    Req -> Design -> Code; Code -> UT -> IT -> ST; }

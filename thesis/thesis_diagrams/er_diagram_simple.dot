@@ -1,0 +1,2 @@
+digraph { node [shape=box, fontname="Arial"];
+    User -- Resume [label="1:N"]; User -- Profile [label="1:1"]; }

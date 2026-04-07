@@ -1,0 +1,3 @@
+digraph { rankdir=LR; node [shape=ellipse, fontname="Arial"];
+    U [label="User Query"]; P [label="Prompt Engineering"]; R [label="AI Result"];
+    U -> P -> R -> U; }

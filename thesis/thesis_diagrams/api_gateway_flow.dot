@@ -1,0 +1,4 @@
+digraph { node [shape=box, fontname="Arial"];
+    Client [label="Frontend Client"]; Gateway [label="OpenRouter Gateway"]; Provider [label="Anthropic Claude 3"];
+    Client -> Gateway [label="Prompt Context"]; Gateway -> Provider [label="Tokenized Stream"]; 
+    Provider -> Gateway -> Client [label="JSON Completion"]; }

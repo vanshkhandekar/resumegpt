@@ -1,0 +1,5 @@
+digraph { node [fontname="Arial"]; rankdir=LR;
+    User [shape=actor]; Admin [shape=actor];
+    UC1 [label="Create Resume", shape=ellipse]; UC2 [label="Get AI Suggestions", shape=ellipse];
+    UC3 [label="Export PDF", shape=ellipse]; UC4 [label="Manage Templates", shape=ellipse];
+    User -> UC1; User -> UC2; User -> UC3; Admin -> UC4; Admin -> UC1; }

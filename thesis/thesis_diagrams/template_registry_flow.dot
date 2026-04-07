@@ -1,0 +1,3 @@
+digraph { rankdir=LR; node [shape=box, fontname="Arial"];
+    ID [label="Template ID"]; Map [label="Registry Object"]; Comp [label="Template React Component"];
+    ID -> Map -> Comp [label="Dynamic Render"]; }

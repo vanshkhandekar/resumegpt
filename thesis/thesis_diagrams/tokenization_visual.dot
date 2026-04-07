@@ -1,0 +1,2 @@
+digraph { rankdir=LR; node [shape=record, fontname="Arial"];
+    Sentence [label="The | quick | brown | fox | jumps | over"]; }

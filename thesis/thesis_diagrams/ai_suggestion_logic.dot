@@ -1,0 +1,4 @@
+digraph { node [shape=box, fontname="Arial"];
+    Field [label="Job Experience Field"]; AIClick [label="User clicks AI Suggest"];
+    Prompt [label="Constructed Context"]; Resp [label="AI Markdown Response"];
+    Field -> AIClick -> Prompt -> OpenRouter -> Resp -> Field [label="Apply"]; }

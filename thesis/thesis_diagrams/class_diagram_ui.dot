@@ -1,0 +1,4 @@
+digraph { node [shape=record, fontname="Arial"];
+    ResumeCard [label="{ResumeCard|resume : ResumeObj\l|onEdit()\lonDelete()\l}"]; 
+    Dashboard [label="{Dashboard|resumes : []\l|loadResumes()\l}"];
+    Dashboard -> ResumeCard [arrowhead=odiamond]; }

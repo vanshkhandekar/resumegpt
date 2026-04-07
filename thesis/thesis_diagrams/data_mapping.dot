@@ -1,0 +1,3 @@
+digraph { rankdir=LR; node [shape=box, fontname="Arial"];
+    JSON [label="Resume JSON"]; Model [label="TypeScript Interfaces"]; Table [label="Postgres JSONB"];
+    JSON -> Model -> Table; }

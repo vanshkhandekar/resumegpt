@@ -1,0 +1,3 @@
+digraph { rankdir=LR; node [shape=box, fontname="Arial"];
+    Git [label="Commit"]; CI [label="CI (Tests)"]; CD [label="Deploy"];
+    Git -> CI -> CD; }

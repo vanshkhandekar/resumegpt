@@ -8,7 +8,9 @@ import {
   FileText,
   LayoutDashboard,
   Plus,
-  Shield
+  Shield,
+  Github,
+  MessageCircle
 } from "lucide-react";
 import { useState } from "react";
 
@@ -53,6 +55,24 @@ export default function Index() {
               <Shield className="h-4 w-4" />
               Admin
             </a>
+            <a
+              href="https://github.com/vanshkhandekar"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="p-2 transition-all text-muted-foreground hover:text-foreground"
+              title="GitHub Repository"
+            >
+              <Github className="h-5 w-5" />
+            </a>
+            <a
+              href="https://t.me/cyberfranky_bio"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-1 px-4 py-2 font-medium transition-all text-blue-500 hover:bg-blue-500/10 rounded-lg"
+            >
+              <MessageCircle className="h-4 w-4" />
+              Support
+            </a>
             <div className="ml-2">
               <ModeToggle />
             </div>
@@ -71,7 +91,13 @@ export default function Index() {
             <nav className="flex flex-col gap-3">
               <a href="/create" className="px-4 py-3 text-center text-primary-foreground bg-primary rounded-lg font-medium">Create Resume</a>
               <a href="/dashboard" className="px-4 py-3 text-center rounded-lg font-medium bg-muted text-foreground">Dashboard</a>
-              <a href="/admin" className="px-4 py-3 text-center font-medium text-primary">Admin Panel</a>
+              <a href="/admin" className="px-4 py-3 text-center font-medium text-primary bg-muted/50 rounded-lg">Admin Panel</a>
+              <a href="https://github.com/vanshkhandekar" target="_blank" className="px-4 py-3 text-center font-medium bg-muted text-foreground rounded-lg flex items-center justify-center gap-2">
+                <Github className="h-4 w-4" /> GitHub
+              </a>
+              <a href="https://t.me/cyberfranky_bio" target="_blank" className="px-4 py-3 text-center font-medium text-blue-500 bg-blue-500/10 rounded-lg flex items-center justify-center gap-2">
+                <MessageCircle className="h-4 w-4" /> Support
+              </a>
               <ModeToggle />
             </nav>
           </div>
@@ -102,9 +128,15 @@ export default function Index() {
                 <p className="font-bold text-xl text-foreground">ResumeGPT</p>
                 <p className="text-sm text-muted-foreground">Professional Resume Builder</p>
               </div>
-              <div className="flex gap-4">
+              <div className="flex gap-4 flex-wrap">
                 <a href="/admin" className="text-primary font-semibold hover:underline">Admin Panel</a>
                 <a href="/dashboard" className="text-muted-foreground font-semibold hover:text-foreground">Dashboard</a>
+                <a href="https://github.com/vanshkhandekar" target="_blank" className="text-muted-foreground hover:text-foreground flex items-center gap-1">
+                    <Github className="h-4 w-4" /> GitHub
+                </a>
+                <a href="https://t.me/cyberfranky_bio" target="_blank" className="text-blue-500 hover:text-blue-600 flex items-center gap-1">
+                    <MessageCircle className="h-4 w-4" /> Support
+                </a>
               </div>
               <p className="text-xs text-muted-foreground">© {new Date().getFullYear()} Academic project only.</p>
             </div>

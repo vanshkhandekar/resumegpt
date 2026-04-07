@@ -1,0 +1,4 @@
+digraph { node [shape=box, fontname="Arial"];
+    Parent [label="Builder Component"]; Child1 [label="Form Section"]; Child2 [label="Live Preview"];
+    Parent -> Child1 [label="Props (Data)"]; Child1 -> Parent [label="Event (onChange)"];
+    Parent -> Child2 [label="Props (Revised Data)"]; }

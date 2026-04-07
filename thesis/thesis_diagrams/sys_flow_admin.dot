@@ -1,15 +1,1 @@
-
-digraph {
-  rankdir=TB;
-  node [shape=box, style="rounded,filled", fillcolor="#dbeafe", fontname="Arial", fontsize=13, margin="0.2,0.1"];
-  edge [fontname="Arial", fontsize=11];
-
-  Start [shape=oval, fillcolor="#bbf7d0", label="Start"];
-  Login [label="Login"];
-  ManageTemplates [label="Manage Templates"];
-  ViewStats [label="View Platform Statistics"];
-  ManageUsers [label="Manage Users &\nSubscriptions"];
-  Stop [shape=oval, fillcolor="#fecaca", label="Stop"];
-
-  Start -> Login -> ManageTemplates -> ViewStats -> ManageUsers -> Stop;
-}
+digraph { rankdir=TB; node [shape=box, style=filled]; Start -> Login -> Manage -> Stop; }

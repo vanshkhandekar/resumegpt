@@ -1,0 +1,22 @@
+=========================================
+   AI RESUME STUDIO - REFERENCES
+=========================================
+
+--- TECHNOLOGIES & LIBRARIES ---
+* React.js (Frontend UI) - https://react.dev/
+* Supabase (Database & Auth) - https://supabase.com/
+* Google Gemini (AI Engine) - https://deepmind.google/technologies/gemini/
+* Tailwind CSS (Styling) - https://tailwindcss.com/
+* ReportLab (Python PDF Export) - https://www.reportlab.com/
+* Vite (Bundler) - https://vitejs.dev/
+
+--- ACADEMIC REFERENCES ---
+[1] Fielding, R. T. (2000). Architectural Styles and the Design of Network-based Software Architectures.
+[2] Resig, J. (2016). Secrets of the JavaScript Ninja. Manning.
+[3] Supabase Documentation (2024). PostgreSQL Row Level Security (RLS) Guide.
+[4] Anthropic/Google Tech Reports (2024). LLM integration in Application Software.
+[5] ReportLab Inc. (2024). PDF Generation Design Patterns.
+
+--- PROJECT LINKS ---
+* GitHub: [Repo Link]
+* Live App: [Live Link]

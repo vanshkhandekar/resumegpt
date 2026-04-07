@@ -20,7 +20,7 @@ const parseJson = <T>(raw: string | null, fallback: T): T => {
   }
 };
 
-const DEFAULT_KEY = "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";
+const DEFAULT_KEY = "";
 
 export const getStoredApiKeys = (): StoredApiKey[] => {
   const keys = parseJson<StoredApiKey[]>(localStorage.getItem(API_KEYS_KEY), []);

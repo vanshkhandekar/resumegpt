@@ -1,0 +1,5 @@
+digraph { node [shape=box, fontname="Arial"]; rankdir=TB;
+    User -> App [label="Enters Email"]; App -> Supabase [label="auth.signIn()"];
+    Supabase -> SES [label="Send OTP"]; SES -> User [label="OTP Code"];
+    User -> App [label="OTP Entered"]; App -> Supabase [label="auth.verify()"];
+    Supabase -> App [label="JWT Session"]; }

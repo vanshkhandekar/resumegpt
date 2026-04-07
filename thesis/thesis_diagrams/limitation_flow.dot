@@ -1,0 +1,2 @@
+digraph { node [shape=box, fontname="Arial"];
+    L1 [label="External API Latency"]; L2 [label="Model Hallucinations"]; L3 [label="Complex Graphic Parsing"]; }

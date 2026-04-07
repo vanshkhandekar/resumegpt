@@ -1,0 +1,3 @@
+digraph { node [shape=ellipse, fontname="Arial"];
+    Resume [label="Candidate Resume"]; Parser [label="ATS Parser"]; Match [label="Score Calculation"];
+    Resume -> Parser -> Match; Match -> Result [label="Ranked List"]; }

@@ -1,0 +1,3 @@
+digraph { node [shape=box, fontname="Arial"];
+    User [label="Client Browser"]; Vercel [label="Vercel (Assets)"]; Supabase [label="Supabase (Auth/DB)"];
+    User -> Vercel; User -> Supabase; }

@@ -1,0 +1,3 @@
+digraph { rankdir=LR; node [fontname="Arial"];
+    subgraph cluster_0 { label="Traditional"; T1 [label="Static Format"]; T2 [label="Manual Keywords"]; }
+    subgraph cluster_1 { label="AI-Powered"; A1 [label="Dynamic Layout"]; A2 [label="Auto-Keyword Optimization"]; } }

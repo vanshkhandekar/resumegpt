@@ -1,0 +1,5 @@
+digraph { node [shape=box, fontname="Arial"];
+    Content [label="Resume Data"]; Rules [label="Weighted Score Rules"]; 
+    S1 [label="Keyword Match (40%)"]; S2 [label="Missing Sections (20%)"];
+    S3 [label="Link Patterns (10%)"];
+    Content -> Rules; Rules -> S1; Rules -> S2; Rules -> S3; S1 -> Total; S2 -> Total; S3 -> Total; }

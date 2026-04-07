@@ -239,7 +239,7 @@ digraph {
 }
 """)
 
-# 9. Architecture Overview
+# 9. Architecture Overview (Already exists, but let's keep it)
 gen("architecture", """
 digraph {
   rankdir=LR;
@@ -275,4 +275,109 @@ digraph {
 }
 """)
 
-print("\n✅ All diagrams generated in:", DIAG_DIR)
+# 10. Component Hierarchy
+gen("component_tree", """
+digraph {
+  rankdir=TB;
+  node [shape=box, style="rounded,filled", fillcolor="#dbeafe", fontname="Arial"];
+  
+  App [label="App.tsx"];
+  Dashboard [label="Dashboard.tsx"];
+  Builder [label="ResumeBuilder.tsx"];
+  Preview [label="LivePreview.tsx"];
+  Sidebar [label="BuilderSidebar.tsx"];
+  Export [label="ExportResume.tsx"];
+  Score [label="ResumeScore.tsx"];
+  AI [label="FloatingAI.tsx"];
+
+  App -> Dashboard;
+  Dashboard -> Builder;
+  Dashboard -> Score;
+  Dashboard -> Export;
+  Builder -> Preview;
+  Builder -> Sidebar;
+  Builder -> AI;
+}
+""")
+
+# 11. Auth Flow
+gen("auth_flow", """
+digraph {
+  rankdir=LR;
+  node [shape=box, style="rounded,filled", fillcolor="#f0fdf4", fontname="Arial"];
+  
+  User [label="User Credentials"];
+  SupabaseAuth [label="Supabase Auth"];
+  JWT [label="JWT Token"];
+  Protected [label="Protected Routes"];
+  DB [label="User Profile DB"];
+
+  User -> SupabaseAuth [label="Login/Signup"];
+  SupabaseAuth -> JWT [label="Verify"];
+  JWT -> Protected [label="Attach"];
+  SupabaseAuth -> DB [label="Sync Profile"];
+}
+""")
+
+# 12. AI Resume Flow (Sequence-like)
+gen("ai_sequence", """
+digraph {
+  rankdir=TB;
+  node [shape=note, fontname="Arial"];
+  
+  User [label="User Input"];
+  Prompt [label="Prompt Context Builder"];
+  OpenRouter [label="OpenRouter API"];
+  Claude [label="Claude-3 Opus"];
+  UI [label="UI Update"];
+
+  User -> Prompt;
+  Prompt -> OpenRouter [label="Payload"];
+  OpenRouter -> Claude [label="Refinement"];
+  Claude -> OpenRouter [label="Content"];
+  OpenRouter -> UI [label="Inject"];
+}
+""")
+
+# 13. Data Model 상세
+gen("detailed_er", """
+digraph {
+  node [shape=record, style=filled, fillcolor="#fff7ed", fontname="Arial"];
+  
+  Users [label="{Users|id : UUID (PK)\l email : text\l created_at : timestamp\l}"];
+  Resumes [label="{Resumes|id : UUID (PK)\l user_id : UUID (FK)\l title : text\l data : jsonb\l template_id : text\l updated_at : timestamp\l}"];
+  Profiles [label="{Profiles|id : UUID (PK/FK)\l full_name : text\l plan : text\l avatar_url : text\l}"];
+
+  Users -> Resumes [label="1:N"];
+  Users -> Profiles [label="1:1"];
+}
+""")
+
+# 14. Testing Pyramid
+gen("test_pyramid", """
+digraph {
+  node [shape=triangle, style=filled, fillcolor="#f0f9ff", fontname="Arial"];
+  Pyramid [label="E2E Tests (Cypress)\l --- \l Integration Tests (Vitest)\l --- \l Unit Tests (React Testing Lib)\l"];
+}
+""")
+
+# 15. Deployment Workflow
+gen("deploy_flow", """
+digraph {
+  rankdir=LR;
+  node [shape=box, style=filled, fillcolor="#ecfdf5", fontname="Arial"];
+  
+  Code [label="Local Dev"];
+  GitHub [label="GitHub Repo"];
+  Action [label="GitHub Actions / CI"];
+  Supabase [label="Supabase Edge"];
+  Vercel [label="Vercel Hosting"];
+
+  Code -> GitHub -> Action;
+  Action -> Supabase [label="DB Migrations"];
+  Action -> Vercel [label="UI Build"];
+}
+""")
+
+print("\\n✅ All diagrams generated in:", DIAG_DIR)
+

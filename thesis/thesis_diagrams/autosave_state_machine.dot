@@ -1,0 +1,2 @@
+digraph { rankdir=LR; node [shape=doublecircle, fontname="Arial"];
+    Idle -> Changing -> Waiting -> Saving -> Idle; }
