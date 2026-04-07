@@ -1,0 +1,33 @@
+
+digraph {
+  rankdir=LR;
+  compound=true;
+  node [fontname="Arial", fontsize=11];
+
+  subgraph cluster_frontend {
+    label="Frontend (React 18 + Vite)";
+    style="filled"; fillcolor="#eff6ff";
+    Builder [label="Resume\nBuilder"];
+    Score   [label="ATS\nScore"];
+    Export  [label="PDF\nExport"];
+    AI      [label="AI\nAssistant"];
+  }
+
+  subgraph cluster_backend {
+    label="Backend (Supabase)";
+    style="filled"; fillcolor="#f0fdf4";
+    PG    [label="PostgreSQL\nDatabase"];
+    Auth  [label="Auth /\nJWT"];
+    Edge  [label="Edge\nFunctions"];
+  }
+
+  subgraph cluster_ai {
+    label="AI Gateway (OpenRouter)";
+    style="filled"; fillcolor="#fefce8";
+    Claude [label="Claude 3\nOpus"];
+  }
+
+  Builder -> PG    [ltail=cluster_frontend, label="REST / CRUD"];
+  Builder -> Claude[ltail=cluster_frontend, lhead=cluster_ai, label="AI API Calls"];
+  PG -> Auth       [ltail=cluster_backend];
+}

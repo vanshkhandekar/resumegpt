@@ -1,0 +1,15 @@
+
+digraph {
+  rankdir=LR;
+  node [fontname="Arial", fontsize=12];
+  edge [fontname="Arial", fontsize=10];
+
+  User     [shape=box, style="filled", fillcolor="#dbeafe", label="USER"];
+  System   [shape=ellipse, style="filled", fillcolor="#bbf7d0", label="AI Resume Studio\nSystem"];
+  AIService[shape=box, style="filled", fillcolor="#fef3c7", label="OpenRouter /\nClaude Opus"];
+
+  User     -> System    [label="Resume Data, Job Details"];
+  System   -> User      [label="ATS Score, PDF, AI Suggestions"];
+  System   -> AIService [label="AI Requests (Prompt)"];
+  AIService-> System    [label="AI Responses (Content)"];
+}

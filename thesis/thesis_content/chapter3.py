@@ -1,6 +1,39 @@
 """Chapter 3: System Design (approx. 3000-4000 words)"""
-from reportlab.platypus import Paragraph, Preformatted
+import os
+from reportlab.platypus import Paragraph, Preformatted, Image
+from reportlab.lib.units import inch
 from .helpers import spacer, page_break, make_table, ascii_diagram
+
+# Diagrams folder — sits next to this package
+THESIS_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+DIAG_DIR = os.path.join(THESIS_DIR, 'thesis_diagrams')
+
+def img(name, width=5.5*inch):
+    """Return an Image flowable for the named diagram, or None if not found."""
+    path = os.path.join(DIAG_DIR, f'{name}.png')
+    if not os.path.exists(path):
+        return None
+    from PIL import Image as PILImage
+    pil = PILImage.open(path)
+    w_px, h_px = pil.size
+    aspect = h_px / w_px
+    height = width * aspect
+    MAX_H = 5.0 * inch   # never exceed 5 inches tall
+    if height > MAX_H:
+        height = MAX_H
+        width  = MAX_H / aspect
+    return Image(path, width=width, height=height)
+
+
+def img_or_spacer(name, S, width=5.5*inch):
+    """Return Image if found, else a placeholder Paragraph."""
+    i = img(name, width)
+    if i:
+        return i
+    return Paragraph(f'[Diagram: {name}.png not generated]', S['Caption'])
+
+
+
 
 def build_chapter3(S):
     story = []
@@ -25,38 +58,10 @@ def build_chapter3(S):
         "sensitive operations like API key management and user authentication.", S['Body']))
     story.append(spacer(8))
     
-    arch_diagram = """
-    +================================================================+
-    |                    AI RESUME STUDIO ARCHITECTURE                |
-    +================================================================+
-    |                                                                  |
-    |   +------------------+    +-----------------+    +------------+ |
-    |   |   PRESENTATION   |    |  BUSINESS LOGIC |    |    DATA    | |
-    |   |     LAYER        |    |     LAYER       |    |   LAYER    | |
-    |   +------------------+    +-----------------+    +------------+ |
-    |   |                  |    |                 |    |            | |
-    |   | React 18 + Vite  |<-->| Custom Hooks    |<-->| Supabase  | |
-    |   | Tailwind CSS     |    | useResumes      |    | PostgreSQL| |
-    |   | Shadcn/UI        |    | useAutoSave     |    | Auth      | |
-    |   | React Router v6  |    | useAuth         |    | Storage   | |
-    |   |                  |    |                 |    |            | |
-    |   | Components:      |    | Services:       |    | External: | |
-    |   | - ResumeBuilder  |    | - ATS Engine    |    | - OpenRtr | |
-    |   | - ResumeScore    |    | - AI Generator  |    | - Claude  | |
-    |   | - ExportResume   |    | - PDF Engine    |    |   Opus    | |
-    |   | - FloatingAI     |    | - Validation    |    |           | |
-    |   | - DashboardHome  |    |                 |    |           | |
-    |   +------------------+    +-----------------+    +------------+ |
-    |                                                                  |
-    |   +------------------------------------------------------------+|
-    |   |              CROSS-CUTTING CONCERNS                        ||
-    |   | Theme Management | Error Handling | Auto-Save | Metrics    ||
-    |   +------------------------------------------------------------+|
-    +================================================================+
-    """
     story.append(Paragraph("<i>Figure 3.1: System Architecture Diagram</i>", S['Caption']))
-    story.append(ascii_diagram(arch_diagram, S))
+    story.append(img_or_spacer('architecture', S, width=6.2*inch))
     story.append(spacer(12))
+
     
     story.append(Paragraph("<b>3.1.1 Presentation Layer</b>", S['SubSection']))
     story.append(Paragraph(
@@ -89,77 +94,27 @@ def build_chapter3(S):
         "from user input through processing to output generation.", S['Body']))
     story.append(spacer(8))
     
-    story.append(Paragraph("<b>3.2.1 Context Diagram (Level 0 DFD)</b>", S['SubSection']))
-    dfd0 = """
-    +===============================================================+
-    |                  CONTEXT DIAGRAM (LEVEL 0)                     |
-    +===============================================================+
-    |                                                                 |
-    |   +---------+     Resume Data      +------------------+         |
-    |   |         | ------------------> |                  |         |
-    |   |  USER   |     ATS Score       |  AI RESUME       |         |
-    |   |         | <------------------ |  STUDIO          |         |
-    |   |         |     AI Suggestions  |  SYSTEM          |         |
-    |   |         | <------------------ |                  |         |
-    |   |         |     PDF Document    |                  |         |
-    |   |         | <------------------ |                  |         |
-    |   +---------+                     +--------+---------+         |
-    |                                            |                   |
-    |                              AI Requests   |   AI Responses    |
-    |                                            v                   |
-    |                                   +-----------------+          |
-    |                                   |  OPENROUTER     |          |
-    |                                   |  AI SERVICE     |          |
-    |                                   |  (Claude Opus)  |          |
-    |                                   +-----------------+          |
-    +===============================================================+
-    """
-    story.append(Paragraph("<i>Figure 3.2: Context Diagram (Level 0 DFD)</i>", S['Caption']))
-    story.append(ascii_diagram(dfd0, S))
+    # ── 2.5 DATA FLOW DIAGRAM: 0th Level (Context)
+    story.append(Paragraph("<b>3.2.1 0th Level – Context Diagram (DFD)</b>", S['SubSection']))
+    story.append(Paragraph(
+        "The Context Diagram shows the overall system boundary.  The User sends resume details; the "
+        "system returns ATS scores, AI suggestions, and a downloadable PDF.  External AI services "
+        "(Claude Opus via OpenRouter) form the only external data store interaction.", S['Body']))
+    story.append(spacer(6))
+    story.append(img_or_spacer('dfd_level0', S, width=5.5*inch))
+    story.append(Paragraph("<i>Figure 3.2: Context Diagram (0th Level DFD)</i>", S['Caption']))
     story.append(spacer(12))
-    
-    story.append(Paragraph("<b>3.2.2 Level 1 DFD</b>", S['SubSection']))
-    dfd1 = """
-    +===============================================================+
-    |                    LEVEL 1 DATA FLOW DIAGRAM                   |
-    +===============================================================+
-    |                                                                 |
-    |   +--------+                                                    |
-    |   |  USER  |                                                    |
-    |   +---+----+                                                    |
-    |       |                                                         |
-    |       | Personal Info, Education, Skills, Experience             |
-    |       v                                                         |
-    |   +-----------+    Resume JSON    +-------------+               |
-    |   | 1.0       | --------------> | 2.0         |               |
-    |   | RESUME    |                  | ATS SCORING |               |
-    |   | BUILDER   |                  | ENGINE      |               |
-    |   +-----------+                  +------+------+               |
-    |       |    ^                            |                       |
-    |       |    | AI Content                 | Score + Feedback      |
-    |       |    |                            v                       |
-    |   +---+--------+               +---------------+               |
-    |   | 3.0        |               | 4.0           |               |
-    |   | AI CONTENT | <------------ | SCORE         |               |
-    |   | GENERATOR  |  Context      | DISPLAY       |               |
-    |   +---+--------+               +---------------+               |
-    |       |                                                         |
-    |       | API Calls                                               |
-    |       v                                                         |
-    |   +-----------+    Resume Data    +-------------+               |
-    |   | OPENROUTER| <-----------     | 5.0         |               |
-    |   | API       |                  | PDF EXPORT  |               |
-    |   +-----------+                  | ENGINE      |               |
-    |                                  +-------------+               |
-    |                                       |                         |
-    |                                       v                         |
-    |                                  +----------+                   |
-    |                                  | PDF FILE |                   |
-    |                                  +----------+                   |
-    +===============================================================+
-    """
-    story.append(Paragraph("<i>Figure 3.3: Level 1 Data Flow Diagram</i>", S['Caption']))
-    story.append(ascii_diagram(dfd1, S))
+
+    # ── 1st Level DFD
+    story.append(Paragraph("<b>3.2.2 1st Level – Process Flow Chart for Admin</b>", S['SubSection']))
+    story.append(img_or_spacer('sys_flow_admin', S, width=3.5*inch))
+    story.append(Paragraph("<i>Figure 3.3: 1st Level DFD / Process Flow for Admin</i>", S['Caption']))
+    story.append(spacer(10))
+
+    # ── 2nd Level DFD
+    story.append(Paragraph("<b>3.2.3 2nd Level – Process Flow Chart for User</b>", S['SubSection']))
+    story.append(img_or_spacer('sys_flow_user', S, width=3.8*inch))
+    story.append(Paragraph("<i>Figure 3.4: 2nd Level DFD / Process Flow for User</i>", S['Caption']))
     story.append(spacer(12))
     
     story.append(Paragraph(
@@ -175,40 +130,10 @@ def build_chapter3(S):
     story.append(Paragraph("3.3 Use Case Diagrams", S['SectionTitle']))
     story.append(Paragraph(
         "The use case diagram identifies the primary actors and their interactions with the AI Resume "
-        "Studio system. Two actors are identified: the User (primary actor) and the AI Service "
-        "(secondary actor providing content generation capabilities).", S['Body']))
+        "Studio system. Two actors: the User (primary) and the AI Service (secondary).", S['Body']))
     story.append(spacer(8))
-    
-    usecase = """
-    +================================================================+
-    |                      USE CASE DIAGRAM                           |
-    +================================================================+
-    |                                                                  |
-    |   +--------+                              +---------------+      |
-    |   |        |--- Create Resume ---------->|               |      |
-    |   |        |--- Edit Resume ------------>|               |      |
-    |   |        |--- Select Template -------->|               |      |
-    |   |        |--- Upload Photo ----------->|               |      |
-    |   |  USER  |--- View Live Preview ------>| AI RESUME     |      |
-    |   |        |--- Generate AI Content ---->| STUDIO        |      |
-    |   |        |--- Run ATS Score ---------->| SYSTEM        |      |
-    |   |        |--- Export as PDF ---------->|               |      |
-    |   |        |--- Chat with AI ----------->|               |      |
-    |   |        |--- Reorder Sections ------->|               |      |
-    |   |        |--- Toggle Sections -------->|               |      |
-    |   |        |--- Toggle Theme ----------->|               |      |
-    |   +--------+                              +-------+-------+      |
-    |                                                   |              |
-    |                                                   |              |
-    |                                           +-------v-------+      |
-    |                                           |  AI SERVICE   |      |
-    |                                           | (OpenRouter + |      |
-    |                                           |  Claude Opus) |      |
-    |                                           +---------------+      |
-    +================================================================+
-    """
-    story.append(Paragraph("<i>Figure 3.4: Use Case Diagram</i>", S['Caption']))
-    story.append(ascii_diagram(usecase, S))
+    story.append(img_or_spacer('use_case', S, width=5.5*inch))
+    story.append(Paragraph("<i>Figure 3.5: Use Case Diagram (system boundary)</i>", S['Caption']))
     story.append(spacer(12))
     
     story.append(Paragraph("<b>Use Case Descriptions:</b>", S['SubSection']))
@@ -228,63 +153,44 @@ def build_chapter3(S):
     for title, desc in usecases:
         story.append(Paragraph(f"{title}: {desc}", S['BodyIndent']))
         story.append(spacer(4))
-    
+
+    # ── STRUCTURE DIAGRAMS OF EACH MODULE (Activity + State)
+    story.append(Paragraph("3.3.2 Structure Diagram of Each Module", S['SectionTitle']))
+    story.append(Paragraph(
+        "Activity diagrams model the dynamic flow of actions within both the Admin and User "
+        "workflows, while State diagrams capture all possible states a user session can occupy "
+        "during interaction with the system.", S['Body']))
+    story.append(spacer(8))
+
+    story.append(Paragraph("<b>Activity diagram for Admin:</b>", S['SubSection']))
+    story.append(img_or_spacer('activity_admin', S, width=5.0*inch))
+    story.append(Paragraph("<i>Figure 3.7: Activity Diagram for Admin</i>", S['Caption']))
+    story.append(spacer(10))
+
+    story.append(Paragraph("<b>Activity diagram for User:</b>", S['SubSection']))
+    story.append(img_or_spacer('activity_user', S, width=5.0*inch))
+    story.append(Paragraph("<i>Figure 3.8: Activity Diagram for User</i>", S['Caption']))
+    story.append(spacer(10))
+
+    story.append(Paragraph("<b>State Diagram of Admin:</b>", S['SubSection']))
+    story.append(img_or_spacer('state_admin', S, width=5.0*inch))
+    story.append(Paragraph("<i>Figure 3.9: State Diagram for Admin</i>", S['Caption']))
+    story.append(spacer(10))
+
+    story.append(Paragraph("<b>State Diagram of User:</b>", S['SubSection']))
+    story.append(img_or_spacer('state_user', S, width=4.5*inch))
+    story.append(Paragraph("<i>Figure 3.10: State Diagram for User</i>", S['Caption']))
+    story.append(spacer(12))
+
+
     # 3.4 ER Diagram
     story.append(Paragraph("3.4 Entity-Relationship Diagram", S['SectionTitle']))
     story.append(Paragraph(
         "The Entity-Relationship diagram represents the data model underlying AI Resume Studio, "
-        "showing the entities, their attributes, and the relationships between them.", S['Body']))
+        "showing entities, attributes, and relationships.", S['Body']))
     story.append(spacer(8))
-    
-    er = """
-    +================================================================+
-    |                   ENTITY-RELATIONSHIP DIAGRAM                   |
-    +================================================================+
-    |                                                                  |
-    |  +------------------+        +--------------------+              |
-    |  |    AUTH.USERS     |        |     PROFILES       |              |
-    |  +------------------+  1..1  +--------------------+              |
-    |  | PK: id (UUID)    |------->| PK/FK: id (UUID)   |              |
-    |  | email            |        | full_name           |              |
-    |  | encrypted_pass   |        | avatar_url          |              |
-    |  | created_at       |        | plan (free/pro/ent) |              |
-    |  +--------+---------+        | ai_calls_used       |              |
-    |           |                   | resumes_created     |              |
-    |           |                   | created_at          |              |
-    |           |  1..*             | updated_at          |              |
-    |           |                   +--------------------+              |
-    |           v                                                      |
-    |  +------------------+                                            |
-    |  |     RESUMES      |                                            |
-    |  +------------------+                                            |
-    |  | PK: id (UUID)    |                                            |
-    |  | FK: user_id      |                                            |
-    |  | title            |                                            |
-    |  | data (JSONB)     |  <-- Contains: name, headline, email,      |
-    |  | template_id      |      phone, summary, photo, skills,        |
-    |  | section_order[]  |      languages, achievements,              |
-    |  | section_enabled  |      education[], projects[],              |
-    |  | last_score       |      experience[], certs[]                 |
-    |  | is_archived      |                                            |
-    |  | created_at       |                                            |
-    |  | updated_at       |                                            |
-    |  +------------------+                                            |
-    |           |                                                      |
-    |           |  1..*                                                 |
-    |           v                                                      |
-    |  +------------------+                                            |
-    |  |   USAGE_LOGS     |                                            |
-    |  +------------------+                                            |
-    |  | PK: id (UUID)    |                                            |
-    |  | FK: user_id      |                                            |
-    |  | action           |  <-- ai_generate | pdf_export |            |
-    |  | metadata (JSONB) |      resume_create | ai_score               |
-    |  | created_at       |                                            |
-    |  +------------------+                                            |
-    +================================================================+
-    """
-    story.append(Paragraph("<i>Figure 3.5: Entity-Relationship Diagram</i>", S['Caption']))
-    story.append(ascii_diagram(er, S))
+    story.append(img_or_spacer('er_diagram', S, width=5.5*inch))
+    story.append(Paragraph("<i>Figure 3.6: Entity-Relationship Diagram</i>", S['Caption']))
     story.append(spacer(12))
     
     # 3.5 Tech Stack

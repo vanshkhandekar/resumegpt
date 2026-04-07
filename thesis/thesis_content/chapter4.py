@@ -524,8 +524,60 @@ def build_chapter4(S):
         "of network latency.", S['Body']))
     story.append(spacer(6))
     
+    # 4.8a INPUT / OUTPUT SCREENS
+    import os
+    from reportlab.platypus import Image as RLImage
+    from reportlab.lib.units import inch as _inch
+    from PIL import Image as _PILImg
+
+    def _sc(name, w=5.0):
+        p = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))),
+                         'public', 'screenshots', name)
+        if not os.path.exists(p):
+            return None
+        pil = _PILImg.open(p)
+        wp, hp = pil.size
+        aspect = hp / wp
+        width = w * _inch
+        height = min(width * aspect, 4.5 * _inch)
+        width = height / max(aspect, 0.001)
+        return RLImage(p, width=width, height=height)
+
+
+    story.append(Paragraph("4.7.5 Input Screens", S['SectionTitle']))
+    story.append(Paragraph(
+        "The following screens represent the key input interfaces through which users interact "
+        "with the AI Resume Studio platform.", S['Body']))
+    for label, fname in [
+        ("Landing Page — Entry Point", "real_landing.png"),
+        ("Template Selection Screen", "real_templates.png"),
+    ]:
+        im = _sc(fname)
+        if im:
+            story.append(Paragraph(f"<b>{label}</b>", S['SubSection']))
+            story.append(im)
+            story.append(spacer(6))
+
+    story.append(page_break())
+    story.append(Paragraph("4.7.6 Output Screens / Reports", S['SectionTitle']))
+    story.append(Paragraph(
+        "After processing, the system renders the following output screens.", S['Body']))
+    for label, fname in [
+        ("Resume Builder — Live Preview", "real_builder.png"),
+        ("User Dashboard — Resume Management", "real_dashboard.png"),
+        ("Admin Console — Platform Analytics", "real_admin.png"),
+    ]:
+        im = _sc(fname)
+        if im:
+            story.append(Paragraph(f"<b>{label}</b>", S['SubSection']))
+            story.append(im)
+            story.append(spacer(6))
+
+    story.append(page_break())
+
     # 4.8 PDF Export
     story.append(Paragraph("4.8 PDF Export Engine", S['SectionTitle']))
+
     story.append(Paragraph(
         "The PDF export engine (ExportResume.tsx, 692 lines) generates high-fidelity A4 documents using "
         "the jsPDF library. The engine supports two export modes: Manual (clean, traditional formatting) "
