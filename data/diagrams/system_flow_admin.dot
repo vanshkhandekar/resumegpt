@@ -1,0 +1,14 @@
+
+digraph G {
+    node [shape=box, style=rounded, fontname="Arial", margin="0.2,0.1"];
+    edge [fontname="Arial"];
+    
+    Start [shape=oval];
+    Login [label="Login"];
+    Manage [label="Manage Templates"];
+    ViewStats [label="View Platform Stats"];
+    ManageUsers [label="Manage Users"];
+    Stop [shape=oval];
+    
+    Start -> Login -> Manage -> ViewStats -> ManageUsers -> Stop;
+}

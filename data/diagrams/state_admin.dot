@@ -1,0 +1,18 @@
+
+digraph G {
+    node [shape=box, style=rounded, fontname="Arial"];
+    Start [shape=circle, style=filled, color=black, width=0.2, label=""];
+    End [shape=doublecircle, style=filled, color=black, width=0.2, label=""];
+    
+    Login [label="Login"];
+    AddTemplates [label="Add or Update\nTemplates"];
+    ViewData [label="View User Data"];
+    
+    Start -> Login;
+    Login -> AddTemplates [label="Update Templates"];
+    Login -> ViewData [label="Analytics"];
+    
+    AddTemplates -> End [label="Logout"];
+    ViewData -> End [label="Logout"];
+    Login -> End [label="Logout"];
+}

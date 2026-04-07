@@ -1,0 +1,21 @@
+
+digraph G {
+    node [shape=box, style=rounded, fontname="Arial", margin="0.2,0.1"];
+    edge [fontname="Arial"];
+    
+    Start [shape=oval];
+    Register [label="Register"];
+    Login [label="Login"];
+    CheckLogin [shape=diamond, label="If login
+valid?", margin="0,0"];
+    Dashboard [label="Dashboard"];
+    Builder [label="Open Resume Builder"];
+    FillDetails [label="Fill Resume Details
+& Get AI Suggestions"];
+    Download [label="Download PDF"];
+    
+    Start -> Register -> Login -> CheckLogin;
+    CheckLogin -> Dashboard [label="Yes"];
+    CheckLogin -> Register [label="No"];
+    Dashboard -> Builder -> FillDetails -> Download;
+}

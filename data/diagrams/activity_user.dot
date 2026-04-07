@@ -1,0 +1,31 @@
+
+digraph G {
+    node [shape=box, style=rounded, fontname="Arial"];
+    Start [shape=circle, style=filled, color=black, width=0.2, label=""];
+    End [shape=doublecircle, style=filled, color=black, width=0.2, label=""];
+    
+    Register [label="Register"];
+    Login [label="Login"];
+    Sync [shape=rect, width=4, height=0.1, style=filled, color=black, label=""];
+    Sync2 [shape=rect, width=4, height=0.1, style=filled, color=black, label=""];
+    Verify [shape=diamond, label="Verify
+Login"];
+    
+    A [label="Create Resume"];
+    B [label="ATS Score Check"];
+    C [label="Download PDF"];
+    
+    Start -> Register -> Login -> Verify;
+    Verify -> Login [label="No"];
+    Verify -> Sync [label="Yes"];
+    
+    Sync -> A;
+    Sync -> B;
+    Sync -> C;
+    
+    A -> Sync2;
+    B -> Sync2;
+    C -> Sync2;
+    
+    Sync2 -> End;
+}

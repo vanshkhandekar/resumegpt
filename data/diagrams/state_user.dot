@@ -1,0 +1,20 @@
+
+digraph G {
+    node [shape=box, style=rounded, fontname="Arial"];
+    Start [shape=circle, style=filled, color=black, width=0.2, label=""];
+    End [shape=doublecircle, style=filled, color=black, width=0.2, label=""];
+    
+    Register [label="Register", shape=box];
+    Login [label="Login", shape=box];
+    Dashboard [label="Dashboard", shape=box];
+    Builder [label="Edit Resume", shape=box];
+    Score [label="Check ATS Score", shape=diamond];
+    
+    Start -> Register [label="Enter Details"];
+    Register -> Login [label="Enter details to login"];
+    Login -> Dashboard [label="Select Template"];
+    Dashboard -> Builder;
+    Builder -> Score;
+    Score -> Builder [label="Score < 70"];
+    Score -> End [label="Score > 70\nDownload"];
+}
